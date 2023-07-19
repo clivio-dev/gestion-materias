@@ -1,25 +1,25 @@
 package Javastral.com.gestorMateriasWeb.model;
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "subjects")
+public class Subject {
 
     @Id
-    @GeneratedValue
-    private Integer id;
+    private int id;
     private String name;
-
-    @OneToMany(mappedBy = "user")
-    private Set<PassedSubject> passedSubjectSet;
-
+    @ManyToMany
+    private List<Curriculum> curriculumList;
+    /*@OneToMany(mappedBy = "subject")
+    Set<PassedSubject> passedSubjectSet;*/
 }
