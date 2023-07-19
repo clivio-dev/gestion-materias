@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,10 +16,21 @@ import java.util.List;
 public class Subject {
 
     @Id
-    private int id;
-    private String name;
-    @ManyToMany
-    private List<Curriculum> curriculumList;
+    private String id;
+    @ManyToMany(mappedBy = "subjectSet")
+    private Set<Curriculum> curriculumList;
+
+
+
+    @ElementCollection
+    @CollectionTable(
+            name = "subject_prerequisites", // Nombre de la tabla para almacenar los códigos correlativos
+            joinColumns = @JoinColumn(name = "subject_id")
+    )
+    @Column(name = "prerequisite_subject_id")
+    private Set<String> prerequisiteSubjects; // Lista de códigos de materias correlativas
+
+    //TODO: es necesario esto?
     /*@OneToMany(mappedBy = "subject")
     Set<PassedSubject> passedSubjectSet;*/
 }

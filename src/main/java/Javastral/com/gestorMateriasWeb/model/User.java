@@ -22,4 +22,5 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<PassedSubject> passedSubjectSet;
 
+    //TODO: lista de planes?
 }

@@ -1,13 +1,10 @@
 package Javastral.com.gestorMateriasWeb.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
+import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +16,10 @@ public class Curriculum {
     private int id;
     private String name;
     @ManyToMany
-    private List<Subject> subjectList;
+    @JoinTable(
+            name = "corruiculums_subjects",
+            joinColumns = @JoinColumn(name = "curriculums_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
+    private Set<Subject> subjectSet;
 }
