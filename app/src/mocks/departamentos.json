@@ -1,0 +1,79 @@
+{
+    "departamentos": [
+        {
+            "cod": "123",
+            "nombre": "Ingenieria e Investigaciones Tecnologicas",
+            "planes": [
+                {
+                    "cod": "223",
+                    "nombre": "Ingenieria en Informatica",
+                    "materias": [
+                        {
+                            "id": "333",
+                            "nombre": "Algebra Lineal y geometria analitca 1",
+                            "correlativas": ["codMat"]
+                        },
+                        {
+                            "id": "334",
+                            "nombre": "Algebra Lineal y geometria analitca 2",
+                            "correlativas": ["333"]   
+                        }
+                    ]    
+                },
+                {
+                    "cod": "224",
+                    "nombre": "Ingenieria en Electronica",
+                    "materias": []    
+                }
+            ]
+        },
+        {
+            "cod": "456",
+            "nombre": "Ciencias Economicas y Financieras",
+            "planes": [
+                {
+                    "cod": "224",
+                    "nombre": "Licenciatura en Economia",
+                    "materias": [
+                        {
+                            "id": "ECO001",
+                            "nombre": "Microeconomia I",
+                            "correlativas": []
+                        },
+                        {
+                            "id": "ECO002",
+                            "nombre": "Macroeconomia I",
+                            "correlativas": ["ECO001"]
+                        },
+                        {
+                            "id": "ECO003",
+                            "nombre": "Estadistica Aplicada",
+                            "correlativas": ["MAT002"]
+                        }
+                    ]    
+                },
+                {
+                    "cod": "225",
+                    "nombre": "Licenciatura en Finanzas",
+                    "materias": [
+                        {
+                            "id": "ECO001",
+                            "nombre": "Microeconomia I",
+                            "correlativas": []
+                        },
+                        {
+                            "id": "ECO002",
+                            "nombre": "Macroeconomia I",
+                            "correlativas": ["ECO001"]
+                        },
+                        {
+                            "id": "FIN001",
+                            "nombre": "Gestion Financiera",
+                            "correlativas": ["ECO003"]
+                        }
+                    ]    
+                }
+            ]
+        }
+    ]
+}
