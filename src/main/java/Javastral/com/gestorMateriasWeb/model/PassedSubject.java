@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "passed_subject")
+@Table(name = "passed_subjects")
 public class PassedSubject {
     @EmbeddedId
     PassedSubjectKey id;

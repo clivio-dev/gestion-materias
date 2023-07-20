@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Embeddable
 public class PassedSubjectKey implements Serializable {
     @Column(name = "user_id")
-    int StudentId;
+    int userId;
     @Column(name= "subject_id")
     int subjectId;
 }

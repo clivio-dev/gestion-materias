@@ -17,8 +17,8 @@ public class Curriculum {
     private String name;
     @ManyToMany
     @JoinTable(
-            name = "corruiculums_subjects",
-            joinColumns = @JoinColumn(name = "curriculums_id"),
+            name = "curriculums_subjects",
+            joinColumns = @JoinColumn(name = "curriculum_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private Set<Subject> subjectSet;

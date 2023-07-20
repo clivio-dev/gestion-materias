@@ -17,6 +17,7 @@ public class Subject {
 
     @Id
     private String id;
+    private String name;
     @ManyToMany(mappedBy = "subjectSet")
     private Set<Curriculum> curriculumList;
 
@@ -27,8 +28,8 @@ public class Subject {
             name = "subject_prerequisites", // Nombre de la tabla para almacenar los códigos correlativos
             joinColumns = @JoinColumn(name = "subject_id")
     )
-    @Column(name = "prerequisite_subject_id")
-    private Set<String> prerequisiteSubjects; // Lista de códigos de materias correlativas
+    @Column(name = "subject_prerequisite_id")
+    private Set<Integer> prerequisiteSubjects; // Lista de códigos de materias correlativas
 
     //TODO: es necesario esto?
     /*@OneToMany(mappedBy = "subject")
