@@ -17,10 +17,10 @@ public class User {
     @Id
     @GeneratedValue
     private String id;
+    @Column(name = "user_name")
     private String name;
 
-    @OneToMany(mappedBy = "user")
-    private Set<PassedSubject> passedSubjectSet;
+    @Transient
+    private Set<Integer> passedSubjectIds;
 
-    //TODO: lista de planes?
 }
