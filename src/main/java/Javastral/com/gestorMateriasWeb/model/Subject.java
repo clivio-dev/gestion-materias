@@ -16,6 +16,7 @@ import java.util.Set;
 public class Subject {
 
     @Id
+    @Column(name = "id")
     private String id;
     @Column(name = "subject_name")
     private String name;

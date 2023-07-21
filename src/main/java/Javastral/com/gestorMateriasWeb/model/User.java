@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Set;
 
 @Data
@@ -21,6 +20,6 @@ public class User {
     private String name;
 
     @Transient
-    private Set<Integer> passedSubjectIds;
+    private Set<PassedSubjectScoreProjection> passedSubjects;
 
 }
