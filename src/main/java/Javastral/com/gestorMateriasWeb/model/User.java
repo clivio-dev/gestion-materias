@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Set;
 
 @Data
@@ -16,10 +15,11 @@ public class User {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private String id;
+    @Column(name = "user_name")
     private String name;
 
-    @OneToMany(mappedBy = "user")
-    private Set<PassedSubject> passedSubjectSet;
+    @Transient
+    private Set<PassedSubjectScoreProjection> passedSubjects;
 
 }

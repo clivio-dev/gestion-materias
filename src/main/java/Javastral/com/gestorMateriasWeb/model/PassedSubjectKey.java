@@ -1,16 +1,15 @@
 package Javastral.com.gestorMateriasWeb.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
-@Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
 public class PassedSubjectKey implements Serializable {
-    @Column(name = "user_id")
-    int StudentId;
-    @Column(name= "subject_id")
-    int subjectId;
+    private String user;
+    private String subject;
 }

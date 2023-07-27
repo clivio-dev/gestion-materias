@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,10 +16,21 @@ import java.util.List;
 public class Subject {
 
     @Id
-    private int id;
+    @Column(name = "id")
+    private String id;
+    @Column(name = "subject_name")
     private String name;
-    @ManyToMany
-    private List<Curriculum> curriculumList;
-    /*@OneToMany(mappedBy = "subject")
-    Set<PassedSubject> passedSubjectSet;*/
+    @ManyToMany(mappedBy = "subjectSet")
+    private Set<Curriculum> curriculumList;
+
+
+
+    @ElementCollection
+    @CollectionTable(
+            name = "subject_prerequisites",
+            joinColumns = @JoinColumn(name = "subject_id")
+    )
+    @Column(name = "subject_prerequisite_id")
+    private Set<Integer> prerequisiteSubjects;
+
 }

@@ -1,21 +1,29 @@
 package Javastral.com.gestorMateriasWeb.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Table(name = "passed_subjects")
+@IdClass(PassedSubjectKey.class)
 public class PassedSubject {
-    @EmbeddedId
-    PassedSubjectKey id;
 
+    @Id
     @ManyToOne
-    @MapsId("userID")
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 
+    @Id
     @ManyToOne
-    @MapsId("subjectId")
-    @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "subject_id", referencedColumnName = "id")
     private Subject subject;
 
+    @Basic
+    @Column(name = "score")
     private int score;
 }
