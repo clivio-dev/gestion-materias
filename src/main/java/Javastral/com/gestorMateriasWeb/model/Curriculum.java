@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.Set;
+
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,14 +16,16 @@ import java.util.Set;
 public class Curriculum {
 
     @Id
-    private int id;
+    private String id;
     @Column(name = "name")
     private String name;
-    @ManyToMany
+     @ManyToMany
     @JoinTable(
             name = "curriculums_subjects",
             joinColumns = @JoinColumn(name = "curriculum_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private Set<Subject> subjectSet;
+
 }
+

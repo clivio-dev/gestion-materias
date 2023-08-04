@@ -1,7 +1,6 @@
 package Javastral.com.gestorMateriasWeb.model;
 
 import jakarta.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,12 +17,8 @@ public class Subject {
     @Id
     @Column(name = "id")
     private String id;
-    @Column(name = "subject_name")
+    @Column(name = "name")
     private String name;
-    @ManyToMany(mappedBy = "subjectSet")
-    private Set<Curriculum> curriculumList;
-
-
 
     @ElementCollection
     @CollectionTable(
