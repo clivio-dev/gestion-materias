@@ -10,6 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PassedSubjectKey implements Serializable {
-    private String user;
-    private String subject;
+    private String userId;
+    private String subjectId;
+
 }

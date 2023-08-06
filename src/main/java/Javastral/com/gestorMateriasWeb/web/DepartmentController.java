@@ -1,8 +1,7 @@
 package Javastral.com.gestorMateriasWeb.web;
 
-import Javastral.com.gestorMateriasWeb.model.Curriculum;
 import Javastral.com.gestorMateriasWeb.model.Department;
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumProyectionIdName;
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumProjectionIdName;
 import Javastral.com.gestorMateriasWeb.model.repository.CurriculumRepository;
 import Javastral.com.gestorMateriasWeb.model.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{departmentId}/curriculum")
-    ResponseEntity<List<CurriculumProyectionIdName>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
+    ResponseEntity<List<CurriculumProjectionIdName>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
         if(departmentRepository.existsById(departmentId)){
             return ResponseEntity.ok(curriculumRepository.getCurriculumByDepartmentIdProy(departmentId));
         }

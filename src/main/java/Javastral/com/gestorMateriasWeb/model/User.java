@@ -1,6 +1,6 @@
 package Javastral.com.gestorMateriasWeb.model;
 
-import Javastral.com.gestorMateriasWeb.model.proyection.PassedSubjectScoreProjection;
+import Javastral.com.gestorMateriasWeb.model.proyection.PassedSubjectProyectionIdScore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +18,9 @@ public class User {
     @Id
     @GeneratedValue
     private String id;
-    @Column(name = "user_name")
+    @Column(name = "name")
     private String name;
+
     @Transient
-    private Set<PassedSubjectScoreProjection> passedSubjects;
+    private Set<PassedSubjectProyectionIdScore> passedSubjects;
 }

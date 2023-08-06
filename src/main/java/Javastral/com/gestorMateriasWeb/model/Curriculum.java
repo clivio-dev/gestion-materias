@@ -25,7 +25,7 @@ public class Curriculum {
             joinColumns = @JoinColumn(name = "curriculum_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
-    private Set<Subject> subjectSet;
+    private Set<Subject> subjects;
 
 }
 

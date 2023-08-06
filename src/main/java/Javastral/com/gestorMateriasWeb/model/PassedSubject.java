@@ -14,16 +14,16 @@ import lombok.NoArgsConstructor;
 public class PassedSubject {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @Column(name = "user_id")
+    private String userId;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    private Subject subject;
+    @Column(name = "subject_id")
+    private String subjectId;
 
     @Basic
     @Column(name = "score")
     private int score;
+
+
 }
