@@ -1,0 +1,28 @@
+.materias-tree {
+    margin-top: 20px;
+    color: #333;
+  }
+  
+  .materias-tree h2 {
+    margin-bottom: 10px;
+  }
+  
+  .materias-tree ul {
+    list-style: none;
+    padding-left: 20px;
+  }
+  
+  .materias-tree li {
+    margin-bottom: 5px;
+  }
+  
+  .materias-tree ul li:before {
+    content: "• ";
+    color: #4caf50;
+  }
+  
+  .materias-tree ul ul li:before {
+    content: "◦ ";
+    color: #4caf50;
+  }
+  

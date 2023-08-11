@@ -1,0 +1,112 @@
+{
+    "users":[
+        {
+            "id": "123",
+            "nombre": "carlos",
+            "materiasAprob": [
+                {
+                    "Algebra": {
+                        "id": "0021",
+                        "nombre": "algebra y geometria analitica",
+                        "correlativas": []
+                    }
+                },
+                {
+                    "Calculo": {
+                        "id": "0022",
+                        "nombre": "calculo diferencial",
+                        "correlativas": ["0021"]
+                    }
+                }
+            ]
+        },
+        {
+            "id": "124",
+            "nombre": "cirilo",
+            "materiasAprob": [
+                {
+                    "Algebra": {
+                        "id": "0021",
+                        "nombre": "algebra y geometria analitica",
+                        "correlativas": []
+                    }
+                },
+                {
+                    "Calculo": {
+                        "id": "0022",
+                        "nombre": "calculo diferencial",
+                        "correlativas": ["0021"]
+                    }
+                },
+                {
+                    "Programacion": {
+                        "id": "0023",
+                        "nombre": "introduccion a la programacion",
+                        "correlativas": []
+                    }
+                }
+            ]
+        },
+        {
+            "id": "125",
+            "nombre": "laura",
+            "materiasAprob": [
+                {
+                    "Fisica": {
+                        "id": "0024",
+                        "nombre": "fisica basica",
+                        "correlativas": []
+                    }
+                },
+                {
+                    "Calculo": {
+                        "id": "0022",
+                        "nombre": "calculo diferencial",
+                        "correlativas": ["0021"]
+                    }
+                },
+                {
+                    "Programacion": {
+                        "id": "0023",
+                        "nombre": "introduccion a la programacion",
+                        "correlativas": []
+                    }
+                }
+            ]
+        },
+        {
+            "id": "126",
+            "nombre": "ana",
+            "materiasAprob": [
+                {
+                    "Fisica": {
+                        "id": "0024",
+                        "nombre": "fisica basica",
+                        "correlativas": []
+                    }
+                },
+                {
+                    "Calculo": {
+                        "id": "0022",
+                        "nombre": "calculo diferencial",
+                        "correlativas": ["0021"]
+                    }
+                },
+                {
+                    "Programacion": {
+                        "id": "0023",
+                        "nombre": "introduccion a la programacion",
+                        "correlativas": []
+                    }
+                },
+                {
+                    "Quimica": {
+                        "id": "0025",
+                        "nombre": "quimica general",
+                        "correlativas": []
+                    }
+                }
+            ]
+        }
+    ]
+}
