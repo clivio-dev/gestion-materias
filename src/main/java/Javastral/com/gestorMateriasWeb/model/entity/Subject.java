@@ -1,6 +1,8 @@
-package Javastral.com.gestorMateriasWeb.model;
+package Javastral.com.gestorMateriasWeb.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +17,10 @@ import java.util.Set;
 public class Subject {
 
     @Id
-    @Column(name = "id")
-    private String id;
-    @Column(name = "name")
+    private long id;
+
+    @NotBlank
+    @Size(max = 255)
     private String name;
 
     @ElementCollection
@@ -25,7 +28,7 @@ public class Subject {
             name = "subject_prerequisites",
             joinColumns = @JoinColumn(name = "subject_id")
     )
-    @Column(name = "subject_prerequisite_id")
-    private Set<Integer> prerequisiteSubjects;
+    @Column(name = "prerequisite_id")
+    private Set<Long> prerequisiteSubjects;
 
 }

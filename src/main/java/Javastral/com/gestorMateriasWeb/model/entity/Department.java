@@ -1,6 +1,8 @@
-package Javastral.com.gestorMateriasWeb.model;
+package Javastral.com.gestorMateriasWeb.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,11 +17,13 @@ import java.util.List;
 public class Department {
 
     @Id
-    private int id;
-    @Column(name = "name")
+    private long id;
+
+    @NotBlank
+    @Size(max = 255)
     private String name;
+
     @OneToMany
     private List<Curriculum> curriculumList;
-
 
 }

@@ -1,6 +1,8 @@
-package Javastral.com.gestorMateriasWeb.model;
+package Javastral.com.gestorMateriasWeb.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,10 +18,13 @@ import java.util.Set;
 public class Curriculum {
 
     @Id
-    private String id;
-    @Column(name = "name")
+    private long id;
+
+    @NotBlank
+    @Size(max = 255)
     private String name;
-     @ManyToMany
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "curriculums_subjects",
             joinColumns = @JoinColumn(name = "curriculum_id"),
