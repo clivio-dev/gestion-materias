@@ -1,6 +1,6 @@
-package Javastral.com.gestorMateriasWeb.web;
-import Javastral.com.gestorMateriasWeb.model.Curriculum;
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumProjectionIdName;
+package Javastral.com.gestorMateriasWeb.web.controller;
+import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProy;
 import Javastral.com.gestorMateriasWeb.model.repository.CurriculumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,7 @@ public class CurriculumController {
     }
 
     @GetMapping("/all")
-    ResponseEntity<List<CurriculumProjectionIdName>> getAllCurriculums(){
+    ResponseEntity<List<CurriculumIdNameProy>> getAllCurriculums(){
         return ResponseEntity.ok(curriculumRepository.getCurriculumProy());
     }
 }

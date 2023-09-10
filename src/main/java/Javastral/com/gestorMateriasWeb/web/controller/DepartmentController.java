@@ -1,8 +1,7 @@
-package Javastral.com.gestorMateriasWeb.web;
+package Javastral.com.gestorMateriasWeb.web.controller;
 
-import Javastral.com.gestorMateriasWeb.model.Department;
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumProjectionIdName;
-import Javastral.com.gestorMateriasWeb.model.repository.CurriculumRepository;
+import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
+import Javastral.com.gestorMateriasWeb.model.entity.Department;
 import Javastral.com.gestorMateriasWeb.model.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +11,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/department")
 public class DepartmentController {
 
     private final DepartmentRepository departmentRepository;
-    private final CurriculumRepository curriculumRepository;
+
 
     @Autowired
-    public DepartmentController(DepartmentRepository departmentRepository, CurriculumRepository curriculumRepository) {
+    public DepartmentController(DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
-        this.curriculumRepository = curriculumRepository;
     }
 
     @GetMapping("/all")
@@ -32,10 +31,9 @@ public class DepartmentController {
     }
 
     @GetMapping("/{departmentId}/curriculum")
-    ResponseEntity<List<CurriculumProjectionIdName>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
-        if(departmentRepository.existsById(departmentId)){
-            return ResponseEntity.ok(curriculumRepository.getCurriculumByDepartmentIdProy(departmentId));
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<List<Curriculum>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
+        Optional<Department> department = departmentRepository.findById(departmentId);
+        return department.map(value -> ResponseEntity.ok(value.getCurriculumList()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
