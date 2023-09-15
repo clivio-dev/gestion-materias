@@ -37,7 +37,12 @@ public class CurriculumController {
     }
 
     @PostMapping
-    String saveCurriculum(@RequestBody CurriculumDTO curriculumDTO) {
+    ResponseEntity<String> saveCurriculum(@RequestBody CurriculumDTO curriculumDTO) {
+
+        if(curriculumRepository.existsById(curriculumDTO.getId()))
+            return ResponseEntity
+                    .badRequest()
+                    .body("The curriculum with ID: " + curriculumDTO.getId() + " already exists.");
 
         Map<Long, Subject> subjects = curriculumDTO.getSubjects().stream().collect(
                 Collectors.toMap(
@@ -53,7 +58,9 @@ public class CurriculumController {
                 if (idPrerequisiteDTO != subjectDTO.getId() && subjects.containsKey(idPrerequisiteDTO)) {
                     prerequisites.add(idPrerequisiteDTO);
                 } else {
-                    throw new IllegalArgumentException("Invalid Prerequisite");
+                    return ResponseEntity
+                            .badRequest()
+                            .body("Invalid Prerequisite with ID: " + idPrerequisiteDTO);
                 }
             }
             subjects.get(subjectDTO.getId()).setPrerequisiteSubjects(prerequisites);
@@ -70,7 +77,7 @@ public class CurriculumController {
         }
         curriculumRepository.save(newCurriculum);
 
-        return "The new curriculum was saved successfully.";
+        return ResponseEntity.ok("The new curriculum was saved successfully.");
     }
 
 }
