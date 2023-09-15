@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubjectUpdateDTO {
-    private long userId;
-    private Map<Long,Integer> save;
-    private List<Long> delete;
+public class CurriculumDTO {
+    private long id;
+    private String name;
+    private Set<SubjectDTO> subjects;
 }

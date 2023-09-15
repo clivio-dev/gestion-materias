@@ -32,7 +32,7 @@ public class DepartmentController {
 
     @GetMapping("/{departmentId}/curriculum")
     ResponseEntity<List<Curriculum>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
-        Optional<Department> department = departmentRepository.findById(departmentId);
+        Optional<Department> department = departmentRepository.findById(Long.parseLong(departmentId));
         return department.map(value -> ResponseEntity.ok(value.getCurriculumList()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

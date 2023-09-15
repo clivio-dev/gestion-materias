@@ -1,30 +1,33 @@
 package Javastral.com.gestorMateriasWeb.web.controller;
 import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
+import Javastral.com.gestorMateriasWeb.model.entity.Subject;
 import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProy;
 import Javastral.com.gestorMateriasWeb.model.repository.CurriculumRepository;
+import Javastral.com.gestorMateriasWeb.model.repository.SubjectRepository;
+import Javastral.com.gestorMateriasWeb.web.controller.request.CurriculumDTO;
+import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/curriculum")
 public class CurriculumController {
     private final CurriculumRepository curriculumRepository;
+    private final SubjectRepository subjectRepository;
     @Autowired
-    public CurriculumController(CurriculumRepository curriculumRepository) {
+    public CurriculumController(CurriculumRepository curriculumRepository, SubjectRepository subjectRepository) {
         this.curriculumRepository = curriculumRepository;
+        this.subjectRepository = subjectRepository;
     }
 
     @GetMapping("/{curriculumId}")
     ResponseEntity<Curriculum> getCurriculumById(@PathVariable String curriculumId) {
-        Optional<Curriculum> curriculum = curriculumRepository.findById(curriculumId);
+        Optional<Curriculum> curriculum = curriculumRepository.findById(Long.parseLong(curriculumId));
         return curriculum.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -32,6 +35,44 @@ public class CurriculumController {
     ResponseEntity<List<CurriculumIdNameProy>> getAllCurriculums(){
         return ResponseEntity.ok(curriculumRepository.getCurriculumProy());
     }
+
+    @PostMapping
+    String saveCurriculum(@RequestBody CurriculumDTO curriculumDTO) {
+
+        Map<Long, Subject> subjects = curriculumDTO.getSubjects().stream().collect(
+                Collectors.toMap(
+                        SubjectDTO::getId,
+                        subjectDTO -> new Subject(subjectDTO.getId(), subjectDTO.getName())));
+
+        for (SubjectDTO subjectDTO : curriculumDTO.getSubjects()) {
+
+            Set<Long> prerequisites = new HashSet<>();
+
+            for (Long idPrerequisiteDTO : subjectDTO.getPrerequisites()) {
+
+                if (idPrerequisiteDTO != subjectDTO.getId() && subjects.containsKey(idPrerequisiteDTO)) {
+                    prerequisites.add(idPrerequisiteDTO);
+                } else {
+                    throw new IllegalArgumentException("Invalid Prerequisite");
+                }
+            }
+            subjects.get(subjectDTO.getId()).setPrerequisiteSubjects(prerequisites);
+        }
+
+        Curriculum newCurriculum = new Curriculum(
+                curriculumDTO.getId(),
+                curriculumDTO.getName(),
+                new HashSet<>(subjects.values()));
+
+        for(Subject s : subjects.values()){
+            if(!subjectRepository.existsById(s.getId()))
+                subjectRepository.save(s);
+        }
+        curriculumRepository.save(newCurriculum);
+
+        return "The new curriculum was saved successfully.";
+    }
+
 }
 
 

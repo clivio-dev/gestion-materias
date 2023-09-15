@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CurriculumRepository extends JpaRepository<Curriculum,String> {
+public interface CurriculumRepository extends JpaRepository<Curriculum,Long> {
 
     @Query(value = "SELECT id,name FROM curriculums", nativeQuery = true)
     List<CurriculumIdNameProy> getCurriculumProy();
