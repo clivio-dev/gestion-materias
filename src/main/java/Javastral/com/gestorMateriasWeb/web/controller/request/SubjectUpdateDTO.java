@@ -11,7 +11,6 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubjectUpdateDTO {
-    private long userId;
     private Map<Long,Integer> save;
     private List<Long> delete;
 }

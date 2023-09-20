@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,7 +24,12 @@ public class Department {
     @Size(max = 255)
     private String name;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Curriculum> curriculumList;
 
+    public Department(long id, String name) {
+        this.id = id;
+        this.name = name;
+        this.curriculumList = new ArrayList<>();
+    }
 }
