@@ -6,7 +6,7 @@ import {
 } from "react-router-dom"
 import ErrorPage from './error-page'
 import App from './App.tsx'
-import './index.css'
+import '../dist/output.css'
 import Login from './routes/login'
 
 const router = createBrowserRouter([
