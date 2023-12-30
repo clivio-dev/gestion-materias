@@ -1,21 +1,5 @@
 import React from "react";
-
-//type DOMAIN = "gestion-materias.com.ar";
-
-type id = `#${string}`;
-
-// Cambiar nombre de PageBlock por algo mas entendible
-interface PageBlock{
-    id: id,
-    content: string
-}
-
-type url = string //`https://${DOMAIN}/${string}`;
-
-interface Page{
-    url: url,
-    content: string
-}
+import { PageBlock, Page } from "./types";
 
 interface Props{
     home: PageBlock,
@@ -23,14 +7,15 @@ interface Props{
     footer: PageBlock
 }
 
-const Nav : React.FC<Props> = ({ home, routes, footer }) =>  {
+const Nav: React.FC<Props> = ({ home, routes, footer }) =>  {
     return(
-        <>
-            <ul className="md:flex bg-gray-900">
+        <nav className="w-screen">
+            <ul className="w-100 p-5 flex align-center justify-evenly bg-gray-900 text-white">
                 <li
                     className=""
                 >
                     <a 
+                        className=""
                         href={home.id}
                     >
                         {home.content}
@@ -43,7 +28,7 @@ const Nav : React.FC<Props> = ({ home, routes, footer }) =>  {
                             key={i}
                         >
                             <a 
-                                href={p.url} 
+                                href={p.url.href} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                             >
@@ -56,7 +41,7 @@ const Nav : React.FC<Props> = ({ home, routes, footer }) =>  {
                     <a href={footer.id}>{footer.content}</a>
                 </li>
             </ul>
-        </>
+        </nav>
     );
 }
 
