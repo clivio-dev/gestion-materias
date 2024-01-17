@@ -1,6 +1,6 @@
 import { Page, PageBlock } from "./components/types";
 
-export const DOMAIN_URL = new URL("http://127.0.0.1:5173");
+export const DOMAIN_URL = new URL("http://localhost:5173");
 
 export const LOGIN: Page = {
   url: new URL("login/", DOMAIN_URL),

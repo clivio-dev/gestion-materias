@@ -31,3 +31,5 @@ export default {
 
 # This project needs React Router -> npm install react-router-dom localforage match-sorter sort-by
 # This project needs tailwind -> npm install -D tailwindcss
+
+# npx tailwindcss -i ./src/input.css -o ./src/dist/output.css --watch
