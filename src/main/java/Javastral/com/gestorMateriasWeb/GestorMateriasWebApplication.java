@@ -52,7 +52,7 @@ public class GestorMateriasWebApplication {
                     .username("gonza")
                     .password(passwordEncoder.encode("1122"))
                     .roles(Set.of(RoleEntity.builder()
-                            .name(ERole.valueOf(ERole.INVITER.name()))
+                            .name(ERole.valueOf(ERole.GUEST.name()))
                             .build()))
                     .build();
 

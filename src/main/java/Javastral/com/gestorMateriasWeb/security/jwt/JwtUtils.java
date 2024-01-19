@@ -1,71 +1,64 @@
 package Javastral.com.gestorMateriasWeb.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
-import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Component
-@Slf4j
 public class JwtUtils {
+  private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${jwt.secret.key}")
-    private String secretKet ;
+  @Value("${jwt.secret.key}")
+  private String jwtSecret;
 
-    @Value("${jwt.time.expiration}")
-    private String timeExpiration;
+  @Value("${jwt.time.expiration}")
+  private int jwtExpirationMs;
 
-    public String generateAccessToken(String username){
-        return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(timeExpiration)))
-                .signWith(getSignatureKey(), SignatureAlgorithm.HS256)
-                .compact();
+  public String generateJwtToken(Authentication authentication) {
+
+    UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+
+    return Jwts.builder()
+        .setSubject((userPrincipal.getUsername()))
+        .setIssuedAt(new Date())
+        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+        .signWith(key(), SignatureAlgorithm.HS256)
+        .compact();
+  }
+  
+  private Key key() {
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+  }
+
+  public String getUserNameFromJwtToken(String token) {
+    return Jwts.parserBuilder().setSigningKey(key()).build()
+               .parseClaimsJws(token).getBody().getSubject();
+  }
+
+  public boolean validateJwtToken(String authToken) {
+    try {
+      Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
+      return true;
+    } catch (MalformedJwtException e) {
+      logger.error("Invalid JWT token: {}", e.getMessage());
+    } catch (ExpiredJwtException e) {
+      logger.error("JWT token is expired: {}", e.getMessage());
+    } catch (UnsupportedJwtException e) {
+      logger.error("JWT token is unsupported: {}", e.getMessage());
+    } catch (IllegalArgumentException e) {
+      logger.error("JWT claims string is empty: {}", e.getMessage());
     }
 
-    public boolean isTokenValid(String token){
-        try{
-            Jwts.parserBuilder()
-                    .setSigningKey(getSignatureKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return true;
-        }catch (Exception e){
-            log.error("Invalid token, error: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public String getUsernameFromToken(String token){
-        return getClaim(token, Claims::getSubject);
-    }
-
-    public <T> T getClaim(String token, Function<Claims, T> claimsTFunction){
-        Claims claims = extractAllCLaims(token);
-        return claimsTFunction.apply(claims);
-    }
-
-    public Claims extractAllCLaims(String token){
-        return Jwts.parserBuilder() // lee un token
-                .setSigningKey(getSignatureKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public Key getSignatureKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(secretKet);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-
+    return false;
+  }
 }
