@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import Javastral.com.gestorMateriasWeb.model.entity.ERole;
-import Javastral.com.gestorMateriasWeb.model.entity.RoleEntity;
+import Javastral.com.gestorMateriasWeb.model.entity.Role;
 
 
 @Repository
-public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
-  Optional<RoleEntity> findByName(ERole name);
+public interface RoleRepository extends JpaRepository<Role, Long> {
+  Optional<Role> findByName(ERole name);
 }
