@@ -2,6 +2,8 @@ package Javastral.com.gestorMateriasWeb.model.entity;
 
 import java.util.Set;
 
+import org.hibernate.annotations.NaturalId;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,12 +38,14 @@ public class UserEntity {
     @NotBlank
     @Size(max = 40)
     @Column(length = 40)
+    @NaturalId
     private String username;
 
     @Email
     @NotBlank
     @Size(max = 40)
     @Column(length = 40)
+    @NaturalId
     private String email;
 
     @NotBlank
