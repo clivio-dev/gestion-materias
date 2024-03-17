@@ -1,0 +1,46 @@
+[
+    {
+        "id": 1,
+        "name": "Mathematics",
+        "score": 85,
+        "correlated": [
+            {
+                "id": 2,
+                "name": "Algebra",
+                "correlated": [
+                    {
+                        "id": 4,
+                        "name": "Linear Algebra",
+                        "correlated": []
+                    },
+                    {
+                        "id": 5,
+                        "name": "Abstract Algebra",
+                        "correlated": []
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "name": "Calculus",
+                "correlated": []
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Physics",
+        "correlated": [
+            {
+                "id": 7,
+                "name": "Classical Mechanics",
+                "correlated": []
+            },
+            {
+                "id": 8,
+                "name": "Electromagnetism",
+                "correlated": []
+            }
+        ]
+    }
+]
