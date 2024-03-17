@@ -1,0 +1,18 @@
+[
+    {
+        "text": "Inicio",
+        "path": "/"
+    },
+    {
+        "text": "Materias",
+        "path": "/subjects"
+    },
+    {
+        "text": "Iniciar Sesión",
+        "path": "/login"
+    },
+    {
+        "text": "Crear Cuenta",
+        "path": "/singup"
+    }
+]
