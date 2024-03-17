@@ -1,0 +1,8 @@
+#root {
+  height: 100dvh;
+  width: auto;
+}
+
+#root > section{
+  padding: 0 2rem;
+}
