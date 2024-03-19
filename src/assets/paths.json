@@ -1,18 +1,27 @@
 [
     {
         "text": "Inicio",
-        "path": "/"
+        "path": "/",
+        "auth": 0
     },
     {
         "text": "Materias",
-        "path": "/subjects"
+        "path": "/subjects",
+        "auth": 1
     },
     {
         "text": "Iniciar Sesión",
-        "path": "/login"
+        "path": "/login",
+        "auth": 0
     },
     {
         "text": "Crear Cuenta",
-        "path": "/singup"
+        "path": "/join",
+        "auth": 0
+    },
+    {
+        "text": "Cerrar Sesión",
+        "path": "/logout",
+        "auth": 1
     }
 ]
