@@ -1,0 +1,43 @@
+.form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    width: fit-content;
+    min-height: min-content;
+    height: 250px;
+    margin: auto;
+    padding: .5rem 2rem;
+    
+    border-radius: 10%;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.form__field{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    gap: .5rem;
+}
+
+.form__field__label{
+    font-size: .8rem;
+}
+
+.form__field__input{
+    padding: .25rem;
+}
+
+/*
+.form__field__input::placeholder{
+    padding: 0rem;
+}
+*/
+
+.form__field__btn{
+    padding: .5rem;
+}

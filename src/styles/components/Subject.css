@@ -1,0 +1,37 @@
+.subject {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 2rem;
+    height: 5rem;
+    width: 8rem;
+    padding: .25rem;
+    border-radius: 15%;
+
+    font-size: .7rem;
+    text-wrap: balance;
+
+    background-color: transparent;
+    color: #efefef;
+
+    cursor: pointer;
+}
+
+.subject--approved{
+    background-color: #016119;
+}
+
+.subject--unapproved{
+    background-color: #002108;
+}
+
+
+.subject__name{
+    font-weight: 650;
+}
+
+.subject__score{
+    font-size: .85rem;
+}

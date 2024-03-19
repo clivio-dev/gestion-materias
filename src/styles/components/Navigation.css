@@ -1,6 +1,15 @@
 .navbar{
-    width: 100dvw;
+    width: 100%;
     padding: .75rem;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar ul{
+    flex-grow: 1;
 
     display: flex;
     flex-direction: row;
@@ -8,25 +17,29 @@
     justify-content: space-evenly;
 }
 
-.navbar > a{
+.navbar li{
+    list-style: none;
+}
+
+.navbar ul li a{
     color: rgba(78, 85, 208, 0.8);
     text-decoration: none;
 }
 
-.navbar > a:hover {
+.navbar ul li a:hover {
     color: #535bf2;
 }
 
-.navbar > a.active{
+.navbar ul li a.active{
     color: #646cff;
 }
 
 /*
-.navbar > a.pending{
+.navbar ul li a.pending{
     
 }
 
-.navbar > a.transitioning{
+.navbar ul li a.transitioning{
 
 }
 */
