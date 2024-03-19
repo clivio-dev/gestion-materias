@@ -5,7 +5,7 @@ const Header = () => {
   return (
     <>
       <Navigation>
-        <Logo />
+        <Logo width={40} height={40} color={"var(--primary-color)"}/>
       </Navigation>
     </>
   )
