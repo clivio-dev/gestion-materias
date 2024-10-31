@@ -8,12 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
 import Javastral.com.gestorMateriasWeb.model.entity.Subject;
@@ -26,6 +21,7 @@ import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectDTO;
 
 @RestController
 @RequestMapping("/curriculum")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class CurriculumController {
     private final CurriculumRepository curriculumRepository;
     private final SubjectRepository subjectRepository;
