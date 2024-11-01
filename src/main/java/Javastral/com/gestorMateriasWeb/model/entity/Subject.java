@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -32,11 +33,13 @@ public class Subject {
     @Column(name = "prerequisite_id")
     private Set<Long> prerequisiteSubjects;
 
+    @ManyToMany(mappedBy = "subjects", fetch = FetchType.LAZY)
+    private Set<Curriculum> curriculums;
+
     public Subject(long id, String name) {
         this.id = id;
         this.name = name;
     }
-
 
     @Override
     public boolean equals(Object o) {

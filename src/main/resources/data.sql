@@ -6,61 +6,53 @@ INSERT INTO departments (id, name) VALUES
 (5, 'Departamento de Salud');
 
 -- Curriculums para el Departamento de Ingeniería (id = 1)
-INSERT INTO curriculums (id, name) VALUES
-(1, 'Arquitectura' ),
-(2, 'Ingeniería Mecánica'),
-(3, 'Ingeniería en Informática'),
-(4, 'Ingeniería en Electrónica'),
-(5, 'Diseño de Aplicaciones Móviles'),
-(6, 'Ingeniería Industrial'),
-(7, 'Ingeniería Civil'),
-(8, 'Desarrollo Web'),
-(9, 'Comunicación Social'),
-(10, 'Trabajo Social'),
-(11, 'Relaciones Laborales'),
-(12, 'Educación Física'),
-(13, 'Relaciones Públicas'),
-(14, 'Ceremonial y Protocolo'),
-(15, 'Administración'),
-(16, 'Contador Público'),
-(17, 'Comercio Internacional'),
-(18, 'Economía'),
-(19, 'Abogacía'),
-(20, 'Ciencia Política'),
-(21, 'Procurador'),
-(22, 'Licenciatura en Enfermería'),
-(23, 'Licenciatura en Nutrición'),
-(24, 'Licenciatura en Kinesiología y Fisiatría'),
-(25, 'Medicina'),
-(26, 'Tecnicatura en Anatomía Patológica');
+INSERT INTO curriculums (id, name, department_id) VALUES
+(1, 'Arquitectura',1),
+(2, 'Ingeniería Mecánica',1),
+(3, 'Ingeniería en Electrónica',1),
+(4, 'Ingeniería en Informática',1),
+(5, 'Diseño de Aplicaciones Móviles',1),
+(6, 'Ingeniería Industrial',1),
+(7, 'Ingeniería Civil',1),
+(8, 'Desarrollo Web',1),
+(9, 'Comunicación Social',2),
+(10, 'Trabajo Social',2),
+(11, 'Relaciones Laborales', 2),
+(12, 'Educación Física',2),
+(13, 'Relaciones Públicas',2),
+(14, 'Ceremonial y Protocolo',2),
+(15, 'Administración',3),
+(16, 'Contador Público',3),
+(17, 'Comercio Internacional',3),
+(18, 'Economía',3),
+(19, 'Abogacía',4),
+(20, 'Ciencia Política',4),
+(21, 'Procurador',4),
+(22, 'Licenciatura en Enfermería',5),
+(23, 'Licenciatura en Nutrición',5),
+(24, 'Licenciatura en Kinesiología y Fisiatría',5),
+(25, 'Medicina',5),
+(26, 'Tecnicatura en Anatomía Patológica',5);
 
-INSERT INTO departments_curriculum_list (curriculum_list_id,department_id) VALUES
-(1, 1),
-(2,1),
-(3,1),
-(4,1),
-(5,1),
-(6,1),
-(7,1),
-(8,1),
-(9,2),
-(10,2),
-(11,2),
-(12,2),
-(13,2),
-(14,2),
-(15,3),
-(16,3),
-(17,3),
-(18,3),
-(19,4),
-(20,4),
-(21,5),
-(22,5),
-(23,5),
-(24,5),
-(25,5),
-(26,5);
+-- INSERT INTO departments_curriculum_list (curriculum_list_id,department_id) VALUES
+-- (9,2),
+-- (10,2),
+-- (11,2),
+-- (12,2),
+-- (13,2),
+-- (14,2),
+-- (15,3),
+-- (16,3),
+-- (17,3),
+-- (18,3),
+-- (19,4),
+-- (20,4),
+-- (21,5),
+-- (22,5),
+-- (23,5),
+-- (24,5),
+-- (25,5),
+-- (26,5);
 
 
 -- Materias de Ingeniería en Informática
@@ -290,3 +282,126 @@ INSERT INTO curriculums_subjects (curriculum_id, subject_id) VALUES
 (4,3675),
 (4,3676),
 (4,3680);
+
+-- Materias de Abogacía
+INSERT INTO subjects (id, name) VALUES
+(2351, 'Elementos de Filosofía'),
+(2352, 'Procesos Sociohistóricos Mundiales'),
+(2353, 'Elementos de Sociología'),
+(2354, 'Introducción a la Ciencia Política'),
+(2355, 'Taller de Integración'),
+(2356, 'Procesos Sociohistóricos Argentinos'),
+(2357, 'Elementos de Economía'),
+(2358, 'Elementos de Administración'),
+(2359, 'Metodología de la Investigación I'),
+(2360, 'Teoría Sociológica'),
+(2361, 'Economía I'),
+(2362, 'Teoría Política I'),
+(2363, 'Psicosociología de las Organizaciones'),
+(2364, 'Economía II'),
+(2365, 'Teoría Política II'),
+(2366, 'Administración Pública'),
+(2367, 'Metodología de la Investigación II'),
+(2368, 'Derecho Constitucional'),
+(2369, 'Demografía Social'),
+(2370, 'Política y Comunicación'),
+(2371, 'Economía Política Argentina'),
+(2372, 'Sistemas Políticos Comparados'),
+(2373, 'Teoría Política Contemporánea'),
+(2374, 'Gestión de Políticas Públicas'),
+(2375, 'Derecho Administrativo'),
+(2376, 'Finanzas Públicas'),
+(2377, 'Relaciones Internacionales'),
+(2378, 'Seminario de Tópicos de Avanzada'),
+(2379, 'Historia Política Americana'),
+(2380, 'Taller de Gestión de Políticas Sociales'),
+(2381, 'Taller de Gestión de Políticas de Producción'),
+(901, 'Inglés I'),
+(902, 'Inglés II'),
+(903, 'Inglés III'),
+(904, 'Inglés IV'),
+(911, 'Computación I'),
+(912, 'Computación II');
+
+-- Correlatividades de Abogacía
+INSERT INTO subject_prerequisites (subject_id, prerequisite_id) VALUES
+-- Taller de Integración
+(2355, 2353),
+(2355, 2354),
+-- Teoría Política I
+(2362, 2354),
+-- Metodología de la Investigación I
+(2359, 2355),
+-- Teoría Sociológica
+(2360, 2353),
+(2360, 2354),
+-- Economía I
+(2361, 2357),
+-- Procesos Sociohistóricos Argentinos
+(2356, 2352),
+-- Historia Política Americana
+(2379, 2362),
+-- Economía II
+(2364, 2361),
+-- Teoría Política II
+(2365, 2362),
+(2365, 2360),
+-- Administración Pública
+(2366, 2358),
+-- Metodología de la Investigación II
+(2367, 2359),
+-- Demografía Social
+(2369, 2365),
+-- Política y Comunicación
+(2370, 2365),
+-- Economía Política Argentina
+(2371, 2369),
+-- Sistemas Políticos Comparados
+(2372, 2368),
+-- Teoría Política Contemporánea
+(2373, 2367),
+(2373, 2368),
+(2373, 2370),
+-- Gestión de Políticas Públicas
+(2374, 2364),
+(2374, 2365),
+(2374, 2366),
+-- Derecho Administrativo
+(2375, 2368),
+-- Relaciones Internacionales
+(2377, 2373),
+-- Psicosociología de las Organizaciones
+(2363, 2360),
+-- Seminario de Tópicos de Avanzada
+(2378, 2371),
+(2378, 2372),
+(2378, 2373),
+-- Taller de Gestión de Políticas Sociales
+(2380, 2363),
+(2380, 2374),
+(2380, 2375),
+(2380, 2376),
+-- Taller de Gestión de Políticas de Producción
+(2381, 2363),
+(2381, 2374),
+(2381, 2375),
+(2381, 2376),
+-- Inglés II
+(902, 901),
+-- Inglés III
+(903, 902),
+-- Inglés IV
+(904, 903),
+-- Computación II
+(912, 911);
+
+-- Asociar materias con el curriculum de Abogacía (id = 19)
+INSERT INTO curriculums_subjects (curriculum_id, subject_id) VALUES
+(19, 2351), (19, 2352), (19, 2353), (19, 2354), (19, 2355),
+(19, 2356), (19, 2357), (19, 2358), (19, 2359), (19, 2360),
+(19, 2361), (19, 2362), (19, 2363), (19, 2364), (19, 2365),
+(19, 2366), (19, 2367), (19, 2368), (19, 2369), (19, 2370),
+(19, 2371), (19, 2372), (19, 2373), (19, 2374), (19, 2375),
+(19, 2376), (19, 2377), (19, 2378), (19, 2379), (19, 2380),
+(19, 2381), (19, 901), (19, 902), (19, 903), (19, 904),
+(19, 911), (19, 912);

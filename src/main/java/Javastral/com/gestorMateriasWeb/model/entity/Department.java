@@ -26,6 +26,7 @@ public class Department {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
     private List<Curriculum> curriculumList;
 
     public Department(long id, String name) {

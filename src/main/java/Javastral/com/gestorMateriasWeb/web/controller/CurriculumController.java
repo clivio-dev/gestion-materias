@@ -6,13 +6,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProy;
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsProy;
+import Javastral.com.gestorMateriasWeb.web.controller.response.ApiResponse;
+import Javastral.com.gestorMateriasWeb.web.controller.response.ErrorData;
+import Javastral.com.gestorMateriasWeb.web.controller.response.MetaData;
+import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
 import Javastral.com.gestorMateriasWeb.model.entity.Subject;
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProy;
 import Javastral.com.gestorMateriasWeb.model.repository.CurriculumRepository;
 import Javastral.com.gestorMateriasWeb.model.repository.SubjectRepository;
 import Javastral.com.gestorMateriasWeb.web.controller.request.CurriculumDTO;
@@ -21,7 +27,7 @@ import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectDTO;
 
 @RestController
 @RequestMapping("/curriculum")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600) // TODO: para dev, aplicar configuracion de cors por db o env
 public class CurriculumController {
     private final CurriculumRepository curriculumRepository;
     private final SubjectRepository subjectRepository;
@@ -32,9 +38,43 @@ public class CurriculumController {
     }
 
     @GetMapping("/{curriculumId}")
-    ResponseEntity<Curriculum> getCurriculumById(@PathVariable String curriculumId) {
-        Optional<Curriculum> curriculum = curriculumRepository.findById(Long.parseLong(curriculumId));
-        return curriculum.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    ResponseEntity<ApiResponse<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
+        Optional<CurriculumWithSubjectsProy> curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
+        
+        if (curriculumOpt.isPresent()) {
+            CurriculumDTO curriculumDTO = new CurriculumDTO(
+                curriculumOpt.get().getId(),
+                curriculumOpt.get().getName(),
+                curriculumOpt.get().getSubjects().stream()
+                    .map(SubjectDTO::fromProjection)
+                    .collect(Collectors.toSet())
+            );
+            
+            ApiResponse<CurriculumDTO> response = ApiResponse.<CurriculumDTO>builder()
+                .data(curriculumDTO)
+                .meta(MetaData.builder()
+                    .pagination(PaginationData.builder()
+                        .page(1)
+                        .pageSize(1)
+                        .total(1)
+                        .build())
+                    .build())
+                .errors(null)
+                .build();
+                
+            return ResponseEntity.ok(response);
+        }
+
+        ApiResponse<CurriculumDTO> errorResponse = ApiResponse.<CurriculumDTO>builder()
+            .data(null)
+            .meta(null)
+            .errors(ErrorData.builder()
+                .message("Curriculum not found")
+                .code("404")
+                .build())
+            .build();
+            
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     @GetMapping("/all")
