@@ -32,5 +32,9 @@ public class Curriculum {
     )
     private Set<Subject> subjects;
 
+    @Column(columnDefinition = "TEXT")
+    @Basic(fetch = FetchType.LAZY)
+    private String description;
+
 }
 

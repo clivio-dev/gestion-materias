@@ -1,58 +1,94 @@
 package Javastral.com.gestorMateriasWeb.web.controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
+import Javastral.com.gestorMateriasWeb.model.entity.PassedSubject;
+import Javastral.com.gestorMateriasWeb.model.entity.UserSubjectId;
+import Javastral.com.gestorMateriasWeb.web.controller.request.PassedSubjectDTO;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
-import Javastral.com.gestorMateriasWeb.model.entity.UserEntity;
+import Javastral.com.gestorMateriasWeb.model.repository.SubjectRepository;
 import Javastral.com.gestorMateriasWeb.model.repository.UserRepository;
-import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectUpdateDTO;
+import Javastral.com.gestorMateriasWeb.model.repository.PassedSubjectRepository;
 
 @RestController
 @RequestMapping("/user")
+
+@Slf4j
 public class UserController {
 
     private final UserRepository userRepository;
+    private final SubjectRepository subjectRepository;
+    private final PassedSubjectRepository passedSubjectRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, SubjectRepository subjectRepository, PassedSubjectRepository passedSubjectRepository) {
         this.userRepository = userRepository;
+        this.subjectRepository = subjectRepository;
+        this.passedSubjectRepository = passedSubjectRepository;
     }
 
+    @PostMapping("/update-passed")
+    @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> updatePassedSubjects(@RequestBody List<PassedSubjectDTO> passedSubjects) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            log.info("Updating passed subjects for user: {}", username);
+            return userRepository.findByUsername(username)
+                    .map(user -> {
+                        try {
+                            passedSubjectRepository.deleteByUserId(user.getId());
 
-    @PostMapping(value = "/update")
-    public ResponseEntity<String> updateSubjects(@RequestBody SubjectUpdateDTO data ){
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        Optional<UserEntity> userOp = userRepository.findByUsername(username);
-        if(userOp.isPresent()){
-            UserEntity user = userOp.get();
+                            passedSubjects.forEach(subjectDTO -> subjectRepository.findById(subjectDTO.id())
+                                    .ifPresent(subject -> {
+                                        PassedSubject passedSubject = new PassedSubject();
+                                        passedSubject.setId(new UserSubjectId(user.getId(), subject.getId()));
+                                        passedSubject.setUser(user);
+                                        passedSubject.setSubject(subject);
+                                        passedSubject.setGrade(subjectDTO.grade());
+                                        passedSubjectRepository.save(passedSubject);
+                                    }));
 
-            Map<Long,Integer> newPassedSubjects = data.getSave();
-            List<Long> deletePassedSubjects = data.getDelete();
-
-            //deletePassedSubjects.forEach(user.getPassedSubjects()::remove);
-            //newPassedSubjects.forEach(user.getPassedSubjects()::put);
-            userRepository.save(user);
-
-            return ResponseEntity.ok("Update successful");
+                            return ResponseEntity.ok("Materias aprobadas actualizadas exitosamente");
+                        } catch (Exception e) {
+                            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                    .body("Error actualizando materias aprobadas: " + e.getMessage());
+                        }
+                    })
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body("Usuario no encontrado"));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
         }
-        return ResponseEntity.badRequest().body("Update couldn't be performed (user id dont exist)");
     }
-//
-//	@GetMapping("/passed-subjects")
-//	ResponseEntity<Map<Long, Integer>> getPassedSubjects() {
-//		String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-//		Optional<UserEntity> user = userRepository.findByUsername(username);
-//
-//		return user.map(value -> ResponseEntity.ok(value.getPassedSubjects()))
-//				.orElseGet(() -> ResponseEntity.notFound().build());
-//	}
+
+    @GetMapping("/passed-subjects")
+    public ResponseEntity<List<PassedSubjectDTO>> getPassedSubjects() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+
+            return userRepository.findByUsername(username)
+                    .map(user -> {
+                        List<PassedSubjectDTO> passedSubjects = PassedSubjectDTO.fromProjection(
+                                passedSubjectRepository.findByUserId(user.getId())
+                        );
+                        return ResponseEntity.ok(passedSubjects);
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
+

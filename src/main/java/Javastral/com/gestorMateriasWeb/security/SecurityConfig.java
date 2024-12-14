@@ -1,6 +1,7 @@
 package Javastral.com.gestorMateriasWeb.security;
 
 import javax.sql.DataSource;
+import javax.sql.rowset.FilteredRowSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import Javastral.com.gestorMateriasWeb.security.jwt.AuthEntryPointJwt;
@@ -69,12 +71,17 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/**").permitAll()
-//						.anyRequest().authenticated()
+//						.requestMatchers("/swagger-ui/**").permitAll()
+//						.requestMatchers("/api/subjects/**").permitAll()
+//						.requestMatchers("/api/curriculums/**").permitAll()
+//						.requestMatchers("/api/departments/**").permitAll()
+						.anyRequest().authenticated()
 						);
 
 		http.authenticationProvider(this.authenticationProvider());
 
 		http.addFilterBefore(this.authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//		http.addFilterBefore(this.authenticationJwtTokenFilter(), FilterSecurityInterceptor.class);
 
 		return http.build();
 	}

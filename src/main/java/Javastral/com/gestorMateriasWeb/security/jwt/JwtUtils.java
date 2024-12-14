@@ -64,4 +64,8 @@ public class JwtUtils {
 
     return false;
   }
+
+  public long getExpirationTime() {
+    return new Date().getTime() + jwtExpirationMs - 1000;
+  }
 }

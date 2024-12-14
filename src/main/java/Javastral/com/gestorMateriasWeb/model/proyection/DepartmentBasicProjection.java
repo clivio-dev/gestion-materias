@@ -2,8 +2,8 @@ package Javastral.com.gestorMateriasWeb.model.proyection;
 
 import java.util.List;
 
-public interface DepartmentBasicProy {
+public interface DepartmentBasicProjection {
     Long getId();
     String getName();
-    List<CurriculumIdNameProy> getCurriculumList();
+    List<CurriculumIdNameProjection> getCurriculumList();
 } 

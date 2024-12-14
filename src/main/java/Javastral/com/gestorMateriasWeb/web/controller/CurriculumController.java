@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProy;
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsProy;
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProjection;
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsProjection;
 import Javastral.com.gestorMateriasWeb.web.controller.response.ApiResponse;
 import Javastral.com.gestorMateriasWeb.web.controller.response.ErrorData;
 import Javastral.com.gestorMateriasWeb.web.controller.response.MetaData;
@@ -15,6 +15,7 @@ import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
@@ -39,7 +40,7 @@ public class CurriculumController {
 
     @GetMapping("/{curriculumId}")
     ResponseEntity<ApiResponse<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
-        Optional<CurriculumWithSubjectsProy> curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
+        Optional<CurriculumWithSubjectsProjection> curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
         
         if (curriculumOpt.isPresent()) {
             CurriculumDTO curriculumDTO = new CurriculumDTO(
@@ -78,10 +79,11 @@ public class CurriculumController {
     }
 
     @GetMapping("/all")
-    ResponseEntity<List<CurriculumIdNameProy>> getAllCurriculums(){
+    ResponseEntity<List<CurriculumIdNameProjection>> getAllCurriculums(){
         return ResponseEntity.ok(curriculumRepository.getCurriculumProy());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     ResponseEntity<String> saveCurriculum(@RequestBody CurriculumDTO curriculumDTO) {
 
@@ -115,7 +117,8 @@ public class CurriculumController {
         Curriculum newCurriculum = new Curriculum(
                 curriculumDTO.getId(),
                 curriculumDTO.getName(),
-                new HashSet<>(subjects.values()));
+                new HashSet<>(subjects.values()), 
+                "");
 
         for(Subject s : subjects.values()){
             if(!subjectRepository.existsById(s.getId()))

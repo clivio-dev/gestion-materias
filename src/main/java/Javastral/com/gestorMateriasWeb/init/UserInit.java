@@ -21,7 +21,7 @@ public class UserInit implements CommandLineRunner{
     UserRepository userRepository;
 	
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		UserEntity userEntity = UserEntity.builder()
                 .email("alexis@gmail.com")
                 .username("alexis")

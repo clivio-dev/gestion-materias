@@ -29,6 +29,10 @@ public class Department {
     @JoinColumn(name = "department_id")
     private List<Curriculum> curriculumList;
 
+    @Column(columnDefinition = "TEXT")
+    @Basic(fetch = FetchType.LAZY)
+    private String description;
+
     public Department(long id, String name) {
         this.id = id;
         this.name = name;

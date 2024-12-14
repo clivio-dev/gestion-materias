@@ -34,6 +34,30 @@ public class SubjectController {
         return getApiResponseResponseEntity(subjects);
     }
 
+    @GetMapping("/{subjectId}/description")
+    ResponseEntity<ApiResponse<String>> getSubjectDescription(@PathVariable String subjectId) {
+        String description = subjectRepository.findDescriptionById(Long.parseLong(subjectId));
+        if (description == null) {
+            if(!subjectRepository.existsById(Long.parseLong(subjectId))) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                        .data(null)
+                        .meta(null)
+                        .errors(ErrorData.builder()
+                                .message("La materia con id " + subjectId + " no existe.")
+                                .code("400")
+                                .build())
+                        .build());
+            } else {
+                description = "No hay descripción disponible para esta materia.";
+            }
+        }
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .data(description)
+                .meta(null)
+                .errors(null)
+                .build());
+    }
+
     private ResponseEntity<ApiResponse<Set<SubjectDTO>>> getApiResponseResponseEntity(Set<SubjectDTO> subjects) {
         ApiResponse<Set<SubjectDTO>> response = ApiResponse.<Set<SubjectDTO>>builder()
                 .data(subjects)

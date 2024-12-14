@@ -1,8 +1,6 @@
 package Javastral.com.gestorMateriasWeb.web.controller.request;
 
-import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
-import Javastral.com.gestorMateriasWeb.model.entity.Department;
-import Javastral.com.gestorMateriasWeb.model.proyection.DepartmentBasicProy;
+import Javastral.com.gestorMateriasWeb.model.proyection.DepartmentBasicProjection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +16,7 @@ public class DepartmentDTO {
     private String name;
     private List<SimpleCurriculumDTO> curriculums;
 
-    public static DepartmentDTO fromProjection(DepartmentBasicProy projection) {
+    public static DepartmentDTO fromProjection(DepartmentBasicProjection projection) {
         DepartmentDTO dto = new DepartmentDTO();
         dto.setId(projection.getId());
         dto.setName(projection.getName());

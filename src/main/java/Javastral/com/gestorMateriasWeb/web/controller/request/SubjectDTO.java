@@ -1,7 +1,6 @@
 package Javastral.com.gestorMateriasWeb.web.controller.request;
 
-import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsProy;
-import Javastral.com.gestorMateriasWeb.model.proyection.SubjectBasicProy;
+import Javastral.com.gestorMateriasWeb.model.proyection.SubjectBasicProjection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,15 +31,15 @@ public class SubjectDTO {
         return Objects.hash(id);
     }
 
-    public static SubjectDTO fromProjection(SubjectBasicProy subjectBasicProy) {
+    public static SubjectDTO fromProjection(SubjectBasicProjection subjectBasicProjection) {
         return new SubjectDTO(
-            subjectBasicProy.getId(),
-            subjectBasicProy.getName(),
-            subjectBasicProy.getPrerequisiteSubjects()
+            subjectBasicProjection.getId(),
+            subjectBasicProjection.getName(),
+            subjectBasicProjection.getPrerequisiteSubjects()
         );
     }
 
-    public static Set<SubjectDTO> fromProjection(Set<SubjectBasicProy> subjects) {
+    public static Set<SubjectDTO> fromProjection(Set<SubjectBasicProjection> subjects) {
         return subjects.stream()
                 .map(SubjectDTO::fromProjection).collect(Collectors.toSet());
     }

@@ -36,6 +36,13 @@ public class Subject {
     @ManyToMany(mappedBy = "subjects", fetch = FetchType.LAZY)
     private Set<Curriculum> curriculums;
 
+    @Column(columnDefinition = "TEXT")
+    @Basic(fetch = FetchType.LAZY)
+    private String description;
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Attachment> attachments = new HashSet<>();
+
     public Subject(long id, String name) {
         this.id = id;
         this.name = name;

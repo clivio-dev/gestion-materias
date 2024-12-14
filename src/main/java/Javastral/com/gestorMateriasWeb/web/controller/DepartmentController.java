@@ -2,7 +2,7 @@ package Javastral.com.gestorMateriasWeb.web.controller;
 
 import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
 import Javastral.com.gestorMateriasWeb.model.entity.Department;
-import Javastral.com.gestorMateriasWeb.model.proyection.DepartmentBasicProy;
+import Javastral.com.gestorMateriasWeb.model.proyection.DepartmentBasicProjection;
 import Javastral.com.gestorMateriasWeb.model.repository.DepartmentRepository;
 import Javastral.com.gestorMateriasWeb.web.controller.request.DepartmentDTO;
 import Javastral.com.gestorMateriasWeb.web.controller.response.ApiResponse;
@@ -38,7 +38,7 @@ public class DepartmentController {
 
     @GetMapping()
     ResponseEntity<ApiResponse<List<DepartmentDTO>>> getAllDepartments() {
-        List<DepartmentBasicProy> departments = departmentRepository.findAllDepartmentsWithBasicCurriculums();
+        List<DepartmentBasicProjection> departments = departmentRepository.findAllDepartmentsWithBasicCurriculums();
         List<DepartmentDTO> departmentDTOs = departments.stream()
             .map(DepartmentDTO::fromProjection)
             .collect(Collectors.toList());

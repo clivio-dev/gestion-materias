@@ -1,16 +1,19 @@
 package Javastral.com.gestorMateriasWeb.security.service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import Javastral.com.gestorMateriasWeb.security.jwt.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,12 +58,22 @@ public class AuthService {
 		
 		String jwt = this.jwtUtils.generateJwtToken(authentication);
 		
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		
-		List<String> roles = userDetails.getAuthorities().stream().map(role -> role.getAuthority())
+		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
 		
-		return new JwtResponse(jwt, userDetails.getUsername(), roles);
+		String refreshToken = "TODO: implementar";
+		long expiration = this.jwtUtils.getExpirationTime();
+
+		return new JwtResponse(
+			jwt,
+			expiration,
+			refreshToken,
+			userDetails.getUsername(), 
+			userDetails.getEmail(),
+			roles
+		);
 	}
 	
 	public ResponseEntity<?> signUp(SignupRequest signupRequest) {

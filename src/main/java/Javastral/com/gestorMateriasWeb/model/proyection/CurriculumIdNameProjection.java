@@ -1,6 +1,6 @@
 package Javastral.com.gestorMateriasWeb.model.proyection;
 
-public interface CurriculumIdNameProy {
+public interface CurriculumIdNameProjection {
     String getId();
     String getName();
 }
