@@ -47,7 +47,7 @@ public class AuthService {
 	@Autowired
 	JwtUtils jwtUtils;
 	
-	public JwtResponse signIn(LoginRequest loginRequest) throws AuthenticationException {
+	public JwtResponse login(LoginRequest loginRequest) throws AuthenticationException {
 		Authentication authentication = this.authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
 							loginRequest.getUsername(),
@@ -70,7 +70,7 @@ public class AuthService {
 			jwt,
 			expiration,
 			refreshToken,
-			userDetails.getUsername(), 
+			userDetails.getUsername(),
 			userDetails.getEmail(),
 			roles
 		);

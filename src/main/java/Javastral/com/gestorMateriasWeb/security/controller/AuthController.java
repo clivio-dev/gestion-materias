@@ -21,10 +21,10 @@ public class AuthController {
 	@Autowired
 	private AuthService authService;
 	
-	@PostMapping("/signin")
+	@PostMapping("")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 		return ResponseEntity.ok(
-				this.authService.signIn(loginRequest)
+				this.authService.login(loginRequest)
 				);
 	}
 

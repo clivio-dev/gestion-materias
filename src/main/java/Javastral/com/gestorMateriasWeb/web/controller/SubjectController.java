@@ -2,9 +2,9 @@ package Javastral.com.gestorMateriasWeb.web.controller;
 
 import Javastral.com.gestorMateriasWeb.model.repository.SubjectRepository;
 import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectDTO;
-import Javastral.com.gestorMateriasWeb.web.controller.response.ApiResponse;
-import Javastral.com.gestorMateriasWeb.web.controller.response.ErrorData;
-import Javastral.com.gestorMateriasWeb.web.controller.response.MetaData;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Response;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Error;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Meta;
 import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,26 +23,33 @@ public class SubjectController {
 
     // TODO: validar mejor los tipos de inputs
     @GetMapping
-    ResponseEntity<ApiResponse<Set<SubjectDTO>>> getSubjectsByCurriculumId(@RequestParam String curriculumId) {
+    ResponseEntity<Response<Set<SubjectDTO>>> getSubjectsByCurriculumId(@RequestParam String curriculumId) {
         Set<SubjectDTO> subjects = SubjectDTO.fromProjection(subjectRepository.findByCurriculumId(Long.parseLong(curriculumId)));
         return getApiResponseResponseEntity(subjects);
     }
 
     @GetMapping("all")
-    ResponseEntity<ApiResponse<Set<SubjectDTO>>> getAllSubjects() {
+    ResponseEntity<Response<Set<SubjectDTO>>> getAllSubjects() {
         Set<SubjectDTO> subjects = SubjectDTO.fromProjection(subjectRepository.findAllBasicProy());
         return getApiResponseResponseEntity(subjects);
     }
+//
+//    @GetMapping("/passed")
+//    ResponseEntity<ApiResponse<Set<String>>> getPassedSubjects() {
+//        // TODO: completar
+//
+//    }
+//
 
     @GetMapping("/{subjectId}/description")
-    ResponseEntity<ApiResponse<String>> getSubjectDescription(@PathVariable String subjectId) {
+    ResponseEntity<Response<String>> getSubjectDescription(@PathVariable String subjectId) {
         String description = subjectRepository.findDescriptionById(Long.parseLong(subjectId));
         if (description == null) {
             if(!subjectRepository.existsById(Long.parseLong(subjectId))) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.<String>builder()
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.<String>builder()
                         .data(null)
                         .meta(null)
-                        .errors(ErrorData.builder()
+                        .errors(Error.builder()
                                 .message("La materia con id " + subjectId + " no existe.")
                                 .code("400")
                                 .build())
@@ -51,17 +58,17 @@ public class SubjectController {
                 description = "No hay descripción disponible para esta materia.";
             }
         }
-        return ResponseEntity.ok(ApiResponse.<String>builder()
+        return ResponseEntity.ok(Response.<String>builder()
                 .data(description)
                 .meta(null)
                 .errors(null)
                 .build());
     }
 
-    private ResponseEntity<ApiResponse<Set<SubjectDTO>>> getApiResponseResponseEntity(Set<SubjectDTO> subjects) {
-        ApiResponse<Set<SubjectDTO>> response = ApiResponse.<Set<SubjectDTO>>builder()
+    private ResponseEntity<Response<Set<SubjectDTO>>> getApiResponseResponseEntity(Set<SubjectDTO> subjects) {
+        Response<Set<SubjectDTO>> response = Response.<Set<SubjectDTO>>builder()
                 .data(subjects)
-                .meta(MetaData.builder()
+                .meta(Meta.builder()
                         .pagination(PaginationData.builder()
                                 .page(1)
                                 .pageSize(subjects.size())

@@ -2,6 +2,7 @@ package Javastral.com.gestorMateriasWeb.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,10 +39,18 @@ public class Subject {
 
     @Column(columnDefinition = "TEXT")
     @Basic(fetch = FetchType.LAZY)
-    private String description;
+    private String description = "";
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Attachment> attachments = new HashSet<>();
+
+    @NotNull
+    @Column(columnDefinition = "int default 0")
+    private int semester = 0;
+
+    @NotNull
+    @Column(columnDefinition = "boolean default false")
+    private boolean anual = false;
 
     public Subject(long id, String name) {
         this.id = id;

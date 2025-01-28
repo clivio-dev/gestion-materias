@@ -19,7 +19,10 @@ public class UserInit implements CommandLineRunner{
     PasswordEncoder passwordEncoder;
     @Autowired
     UserRepository userRepository;
-	
+
+    /**
+     * este metodo solo sirve para dev
+     */
 	@Override
 	public void run(String... args) {
 		UserEntity userEntity = UserEntity.builder()

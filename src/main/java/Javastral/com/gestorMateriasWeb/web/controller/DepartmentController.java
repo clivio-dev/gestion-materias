@@ -5,20 +5,19 @@ import Javastral.com.gestorMateriasWeb.model.entity.Department;
 import Javastral.com.gestorMateriasWeb.model.proyection.DepartmentBasicProjection;
 import Javastral.com.gestorMateriasWeb.model.repository.DepartmentRepository;
 import Javastral.com.gestorMateriasWeb.web.controller.request.DepartmentDTO;
-import Javastral.com.gestorMateriasWeb.web.controller.response.ApiResponse;
-import Javastral.com.gestorMateriasWeb.web.controller.response.ErrorData;
-import Javastral.com.gestorMateriasWeb.web.controller.response.MetaData;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Response;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Error;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Meta;
 import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,15 +36,15 @@ public class DepartmentController {
     }
 
     @GetMapping()
-    ResponseEntity<ApiResponse<List<DepartmentDTO>>> getAllDepartments() {
+    ResponseEntity<Response<List<DepartmentDTO>>> getAllDepartments() {
         List<DepartmentBasicProjection> departments = departmentRepository.findAllDepartmentsWithBasicCurriculums();
         List<DepartmentDTO> departmentDTOs = departments.stream()
             .map(DepartmentDTO::fromProjection)
             .collect(Collectors.toList());
 
-        ApiResponse<List<DepartmentDTO>> response = ApiResponse.<List<DepartmentDTO>>builder()
+        Response<List<DepartmentDTO>> response = Response.<List<DepartmentDTO>>builder()
             .data(departmentDTOs)
-            .meta(MetaData.builder()
+            .meta(Meta.builder()
                 .pagination(PaginationData.builder()
                     .page(1)
                     .pageSize(departmentDTOs.size())
@@ -59,13 +58,14 @@ public class DepartmentController {
     }
 
     @GetMapping("/{departmentId}")
-    ResponseEntity<ApiResponse<List<Curriculum>>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
+    @Transactional
+    ResponseEntity<Response<List<Curriculum>>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
         Optional<Department> department = departmentRepository.findById(Long.parseLong(departmentId));
         
         if (department.isPresent()) {
-            ApiResponse<List<Curriculum>> response = ApiResponse.<List<Curriculum>>builder()
+            Response<List<Curriculum>> response = Response.<List<Curriculum>>builder()
                 .data(department.get().getCurriculumList())
-                .meta(MetaData.builder()
+                .meta(Meta.builder()
                     .pagination(PaginationData.builder()
                         .page(1)
                         .pageSize(department.get().getCurriculumList().size())
@@ -77,10 +77,10 @@ public class DepartmentController {
             return ResponseEntity.ok(response);
         }
 
-        ApiResponse<List<Curriculum>> errorResponse = ApiResponse.<List<Curriculum>>builder()
+        Response<List<Curriculum>> errorResponse = Response.<List<Curriculum>>builder()
             .data(null)
             .meta(null)
-            .errors(ErrorData.builder()
+            .errors(Error.builder()
                 .message("Department not found")
                 .code("404")
                 .build())
@@ -90,11 +90,11 @@ public class DepartmentController {
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    ResponseEntity<ApiResponse<String>> saveDepartment(@RequestBody DepartmentDTO departmentDTO) {
+    ResponseEntity<Response<String>> saveDepartment(@RequestBody DepartmentDTO departmentDTO) {
         try {
             departmentRepository.save(new Department(departmentDTO.getId(), departmentDTO.getName()));
             
-            ApiResponse<String> response = ApiResponse.<String>builder()
+            Response<String> response = Response.<String>builder()
                 .data("Department saved")
                 .meta(null)
                 .errors(null)
@@ -108,10 +108,10 @@ public class DepartmentController {
                 "Department with ID: " + departmentDTO.getId() + " already exists" :
                 "Internal server error";
                 
-            ApiResponse<String> errorResponse = ApiResponse.<String>builder()
+            Response<String> errorResponse = Response.<String>builder()
                 .data(null)
                 .meta(null)
-                .errors(ErrorData.builder()
+                .errors(Error.builder()
                     .message(errorMessage)
                     .code(departmentRepository.existsById(departmentDTO.getId()) ? "400" : "500")
                     .build())

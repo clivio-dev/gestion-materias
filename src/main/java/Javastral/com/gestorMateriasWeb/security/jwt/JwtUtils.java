@@ -2,17 +2,16 @@ package Javastral.com.gestorMateriasWeb.security.jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +30,16 @@ public class JwtUtils {
 
     UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
+    Set<String> roles = userPrincipal.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toSet());
+
+    long userId = ((UserDetailsImpl) userPrincipal).getId();
+
     return Jwts.builder()
         .setSubject((userPrincipal.getUsername()))
+        .claim("id", userId)
+        .claim("roles", roles)
         .setIssuedAt(new Date())
         .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
         .signWith(key(), SignatureAlgorithm.HS256)
@@ -46,6 +53,25 @@ public class JwtUtils {
   public String getUserNameFromJwtToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key()).build()
                .parseClaimsJws(token).getBody().getSubject();
+  }
+
+  public Set<String> getRolesFromJwtToken(String token) {
+    Claims claims = Jwts.parserBuilder()
+            .setSigningKey(key())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+
+    return claims.get("roles", Set.class);
+  }
+
+  public String getIdFromJwtToken(String token) {
+    return Jwts.parserBuilder()
+            .setSigningKey(key())
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("id", String.class); // Extraer el ID del claim "id"
   }
 
   public boolean validateJwtToken(String authToken) {

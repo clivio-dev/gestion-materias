@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProjection;
 import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsProjection;
-import Javastral.com.gestorMateriasWeb.web.controller.response.ApiResponse;
-import Javastral.com.gestorMateriasWeb.web.controller.response.ErrorData;
-import Javastral.com.gestorMateriasWeb.web.controller.response.MetaData;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Response;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Error;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Meta;
 import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class CurriculumController {
     }
 
     @GetMapping("/{curriculumId}")
-    ResponseEntity<ApiResponse<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
+    ResponseEntity<Response<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
         Optional<CurriculumWithSubjectsProjection> curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
         
         if (curriculumOpt.isPresent()) {
@@ -51,9 +51,9 @@ public class CurriculumController {
                     .collect(Collectors.toSet())
             );
             
-            ApiResponse<CurriculumDTO> response = ApiResponse.<CurriculumDTO>builder()
+            Response<CurriculumDTO> response = Response.<CurriculumDTO>builder()
                 .data(curriculumDTO)
-                .meta(MetaData.builder()
+                .meta(Meta.builder()
                     .pagination(PaginationData.builder()
                         .page(1)
                         .pageSize(1)
@@ -66,10 +66,10 @@ public class CurriculumController {
             return ResponseEntity.ok(response);
         }
 
-        ApiResponse<CurriculumDTO> errorResponse = ApiResponse.<CurriculumDTO>builder()
+        Response<CurriculumDTO> errorResponse = Response.<CurriculumDTO>builder()
             .data(null)
             .meta(null)
-            .errors(ErrorData.builder()
+            .errors(Error.builder()
                 .message("Curriculum not found")
                 .code("404")
                 .build())
