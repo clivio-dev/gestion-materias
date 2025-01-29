@@ -5,10 +5,10 @@ import Javastral.com.gestorMateriasWeb.model.entity.Department;
 import Javastral.com.gestorMateriasWeb.model.proyection.DepartmentBasicProjection;
 import Javastral.com.gestorMateriasWeb.model.repository.DepartmentRepository;
 import Javastral.com.gestorMateriasWeb.web.controller.request.DepartmentDTO;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Pagination;
 import Javastral.com.gestorMateriasWeb.web.controller.response.Response;
 import Javastral.com.gestorMateriasWeb.web.controller.response.Error;
 import Javastral.com.gestorMateriasWeb.web.controller.response.Meta;
-import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +29,6 @@ public class DepartmentController {
 
     private final DepartmentRepository departmentRepository;
 
-
     @Autowired
     public DepartmentController(DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
@@ -37,90 +36,49 @@ public class DepartmentController {
 
     @GetMapping()
     ResponseEntity<Response<List<DepartmentDTO>>> getAllDepartments() {
-        List<DepartmentBasicProjection> departments = departmentRepository.findAllDepartmentsWithBasicCurriculums();
-        List<DepartmentDTO> departmentDTOs = departments.stream()
+        var departmentDTOs = departmentRepository.findAllDepartmentsWithBasicCurriculums().stream()
             .map(DepartmentDTO::fromProjection)
             .collect(Collectors.toList());
 
-        Response<List<DepartmentDTO>> response = Response.<List<DepartmentDTO>>builder()
-            .data(departmentDTOs)
-            .meta(Meta.builder()
-                .pagination(PaginationData.builder()
-                    .page(1)
-                    .pageSize(departmentDTOs.size())
-                    .total(departmentDTOs.size())
-                    .build())
-                .build())
-            .errors(null)
-            .build();
-
-        return ResponseEntity.ok(response);
+        var r = Response.fromCollection(departmentDTOs);
+        return ResponseEntity.ok(r);
     }
 
     @GetMapping("/{departmentId}")
     @Transactional
     ResponseEntity<Response<List<Curriculum>>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
-        Optional<Department> department = departmentRepository.findById(Long.parseLong(departmentId));
+        var department = departmentRepository.findById(Long.parseLong(departmentId));
         
-        if (department.isPresent()) {
-            Response<List<Curriculum>> response = Response.<List<Curriculum>>builder()
-                .data(department.get().getCurriculumList())
-                .meta(Meta.builder()
-                    .pagination(PaginationData.builder()
-                        .page(1)
-                        .pageSize(department.get().getCurriculumList().size())
-                        .total(department.get().getCurriculumList().size())
-                        .build())
-                    .build())
-                .errors(null)
-                .build();
-            return ResponseEntity.ok(response);
+        if (department.isEmpty()) {
+            var msg = "Department with id " + departmentId + "not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.notFound(msg));
         }
 
-        Response<List<Curriculum>> errorResponse = Response.<List<Curriculum>>builder()
-            .data(null)
-            .meta(null)
-            .errors(Error.builder()
-                .message("Department not found")
-                .code("404")
-                .build())
-            .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        var curriculums = department.get().getCurriculumList();
+        var r = Response.fromCollection(curriculums);
+        return ResponseEntity.ok(r);
     }
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    ResponseEntity<Response<String>> saveDepartment(@RequestBody DepartmentDTO departmentDTO) {
+    ResponseEntity<Response<DepartmentDTO>> saveDepartment(@RequestBody DepartmentDTO departmentDTO) {
         try {
             departmentRepository.save(new Department(departmentDTO.getId(), departmentDTO.getName()));
-            
-            Response<String> response = Response.<String>builder()
-                .data("Department saved")
-                .meta(null)
-                .errors(null)
-                .build();
-                
-            return ResponseEntity.ok(response);
+            var r = new Response<>(departmentDTO);
+            return ResponseEntity.ok(r);
         } catch (Exception e) {
-            log.error(e.getMessage());
-            
-            String errorMessage = departmentRepository.existsById(departmentDTO.getId()) ?
-                "Department with ID: " + departmentDTO.getId() + " already exists" :
-                "Internal server error";
-                
-            Response<String> errorResponse = Response.<String>builder()
-                .data(null)
-                .meta(null)
-                .errors(Error.builder()
-                    .message(errorMessage)
-                    .code(departmentRepository.existsById(departmentDTO.getId()) ? "400" : "500")
-                    .build())
-                .build();
-                
-            return ResponseEntity
-                .status(departmentRepository.existsById(departmentDTO.getId()) ? 
-                    HttpStatus.BAD_REQUEST : HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(errorResponse);
+            log.error("Error al guardar departamento", e);
+
+            boolean exists = departmentRepository.existsById(departmentDTO.getId());
+            var msg = exists
+                    ? "Department with ID " + departmentDTO.getId() + " already exists"
+                    : "Internal server error";
+            var code = exists ? HttpStatus.CONFLICT.toString() : HttpStatus.INTERNAL_SERVER_ERROR.toString();
+            var status = exists ? HttpStatus.CONFLICT : HttpStatus.INTERNAL_SERVER_ERROR;
+            var error = new Error(msg, code);
+
+            Response<DepartmentDTO> r = new Response<>(error);
+            return ResponseEntity.status(status).body(r);
         }
     }
 }

@@ -11,7 +11,6 @@ import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsPr
 import Javastral.com.gestorMateriasWeb.web.controller.response.Response;
 import Javastral.com.gestorMateriasWeb.web.controller.response.Error;
 import Javastral.com.gestorMateriasWeb.web.controller.response.Meta;
-import Javastral.com.gestorMateriasWeb.web.controller.response.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,7 @@ import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectDTO;
 public class CurriculumController {
     private final CurriculumRepository curriculumRepository;
     private final SubjectRepository subjectRepository;
+
     @Autowired
     public CurriculumController(CurriculumRepository curriculumRepository, SubjectRepository subjectRepository) {
         this.curriculumRepository = curriculumRepository;
@@ -40,42 +40,21 @@ public class CurriculumController {
 
     @GetMapping("/{curriculumId}")
     ResponseEntity<Response<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
-        Optional<CurriculumWithSubjectsProjection> curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
-        
-        if (curriculumOpt.isPresent()) {
-            CurriculumDTO curriculumDTO = new CurriculumDTO(
+        var curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
+        if (curriculumOpt.isEmpty()) {
+            var msg = "Curriculum with id " + curriculumId + " not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.notFound(msg));
+        }
+
+        var curriculumDTO = new CurriculumDTO(
                 curriculumOpt.get().getId(),
                 curriculumOpt.get().getName(),
                 curriculumOpt.get().getSubjects().stream()
-                    .map(SubjectDTO::fromProjection)
-                    .collect(Collectors.toSet())
-            );
-            
-            Response<CurriculumDTO> response = Response.<CurriculumDTO>builder()
-                .data(curriculumDTO)
-                .meta(Meta.builder()
-                    .pagination(PaginationData.builder()
-                        .page(1)
-                        .pageSize(1)
-                        .total(1)
-                        .build())
-                    .build())
-                .errors(null)
-                .build();
-                
-            return ResponseEntity.ok(response);
-        }
-
-        Response<CurriculumDTO> errorResponse = Response.<CurriculumDTO>builder()
-            .data(null)
-            .meta(null)
-            .errors(Error.builder()
-                .message("Curriculum not found")
-                .code("404")
-                .build())
-            .build();
-            
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+                        .map(SubjectDTO::fromProjection)
+                        .collect(Collectors.toSet())
+        );
+        var r = new Response<>(curriculumDTO);
+        return ResponseEntity.ok(r);
     }
 
     @GetMapping("/all")
@@ -83,6 +62,7 @@ public class CurriculumController {
         return ResponseEntity.ok(curriculumRepository.getCurriculumProy());
     }
 
+    // TODO: esto huele a bacalao
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     ResponseEntity<String> saveCurriculum(@RequestBody CurriculumDTO curriculumDTO) {
