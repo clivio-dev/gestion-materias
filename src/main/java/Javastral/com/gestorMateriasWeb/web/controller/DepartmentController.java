@@ -46,6 +46,7 @@ public class DepartmentController {
 
     @GetMapping("/{departmentId}")
     @Transactional
+    // TODO: esto da error al traer un departamento no vacio, hay que hacer una proyeccion
     ResponseEntity<Response<List<Curriculum>>> getCurriculumByDepartmentId(@PathVariable String departmentId) {
         var department = departmentRepository.findById(Long.parseLong(departmentId));
         

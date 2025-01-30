@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface CurriculumRepository extends JpaRepository<Curriculum,Long> {
 
     @Query("SELECT c FROM Curriculum c LEFT JOIN FETCH c.subjects WHERE c.id = :curriculumId")
-    Optional<CurriculumWithSubjectsProjection> findCurriculumWithSubjectsById(@Param("curriculumId") Long curriculumId);
+    Optional<Curriculum> findCurriculumWithSubjectsById(@Param("curriculumId") Long curriculumId);
 
     @Query("SELECT c.id as id, c.name as name FROM Curriculum c")
     List<CurriculumIdNameProjection> getCurriculumProy();

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -32,6 +33,8 @@ public class Subject {
             joinColumns = @JoinColumn(name = "subject_id")
     )
     @Column(name = "prerequisite_id")
+    // Alexis Note: esto hace que al cargar la colleccion que es lazy se cargue de a 100 evitando una consulta por cada una, nose por que podiendo esta coleccion en EAGER no es suficiente y aun tengo que hacer esto
+    @BatchSize(size = 100)
     private Set<Long> prerequisiteSubjects;
 
     @ManyToMany(mappedBy = "subjects", fetch = FetchType.LAZY)

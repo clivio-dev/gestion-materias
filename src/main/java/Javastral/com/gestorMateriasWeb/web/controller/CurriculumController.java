@@ -40,21 +40,25 @@ public class CurriculumController {
 
     @GetMapping("/{curriculumId}")
     ResponseEntity<Response<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
-        var curriculumOpt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
-        if (curriculumOpt.isEmpty()) {
+        var opt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
+        if (opt.isEmpty()) {
             var msg = "Curriculum with id " + curriculumId + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.notFound(msg));
         }
 
-        var curriculumDTO = new CurriculumDTO(
-                curriculumOpt.get().getId(),
-                curriculumOpt.get().getName(),
-                curriculumOpt.get().getSubjects().stream()
-                        .map(SubjectDTO::fromProjection)
+        var curriculum = opt.get();
+        var dto = new CurriculumDTO(
+                curriculum.getId(),
+                curriculum.getName(),
+                curriculum.getSubjects().stream()
+                        .map(s -> new SubjectDTO(
+                                s.getId(),
+                                s.getName(),
+                                s.getPrerequisiteSubjects() // Ya cargado eficientemente
+                        ))
                         .collect(Collectors.toSet())
         );
-        var r = new Response<>(curriculumDTO);
-        return ResponseEntity.ok(r);
+        return ResponseEntity.ok(new Response<>(dto));
     }
 
     @GetMapping("/all")
