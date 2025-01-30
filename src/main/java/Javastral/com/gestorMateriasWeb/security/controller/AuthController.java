@@ -32,4 +32,9 @@ public class AuthController {
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		return this.authService.signUp(signUpRequest);
 	}
+	
+	@PostMapping("/signup")
+	public ResponseEntity<?> changePassword(@Valid @RequestBody SignupRequest signUpRequest) {
+		return this.authService.signUp(signUpRequest);
+	}
 }

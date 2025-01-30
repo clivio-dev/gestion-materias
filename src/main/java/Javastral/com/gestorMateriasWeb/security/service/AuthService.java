@@ -28,6 +28,7 @@ import Javastral.com.gestorMateriasWeb.security.jwt.JwtUtils;
 import Javastral.com.gestorMateriasWeb.security.payload.JwtResponse;
 import Javastral.com.gestorMateriasWeb.security.payload.LoginRequest;
 import Javastral.com.gestorMateriasWeb.security.payload.MessageResponse;
+import Javastral.com.gestorMateriasWeb.security.payload.PasswordResetRequest;
 import Javastral.com.gestorMateriasWeb.security.payload.SignupRequest;
 
 @Service
@@ -125,4 +126,15 @@ public class AuthService {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+	
+	public ResponseEntity<?> resetPassword(PasswordResetRequest passwordResetRequest){
+		
+		this.userRepository
+			.findByUsername(passwordResetRequest.getUsername())
+			.orElseThrow(() -> new RuntimeException("Error: User does not exist."))
+			.setPassword(this.encoder.encode(passwordResetRequest.getNewPassword()));
+		
+		return ResponseEntity.ok("Contraseña cambiada con exito");
+	}
+	
 }

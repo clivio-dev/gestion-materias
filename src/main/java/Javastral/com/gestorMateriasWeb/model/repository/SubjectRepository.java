@@ -2,6 +2,8 @@ package Javastral.com.gestorMateriasWeb.model.repository;
 
 import Javastral.com.gestorMateriasWeb.model.entity.Subject;
 import Javastral.com.gestorMateriasWeb.model.proyection.SubjectBasicProjection;
+import jakarta.persistence.EntityManager;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
