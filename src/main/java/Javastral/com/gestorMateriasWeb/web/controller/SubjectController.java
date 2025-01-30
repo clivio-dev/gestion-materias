@@ -28,7 +28,7 @@ public class SubjectController {
         return ResponseEntity.ok(r);
     }
 
-    @GetMapping("all")
+    @GetMapping("/all")
     ResponseEntity<Response<Set<SubjectDTO>>> getAllSubjects() {
         var subjects = SubjectDTO.fromProjection(subjectRepository.findAllBasicProy());
         var r = Response.fromCollection(subjects);

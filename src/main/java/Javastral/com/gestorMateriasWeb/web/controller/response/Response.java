@@ -24,7 +24,7 @@ public record Response<T> (
     }
 
     public static <C extends Collection<E>, E> Response<C> fromCollection(C collection) {
-        return new Response<>(collection, new Meta(Collections.singleton(collection.size())), null);
+        return new Response<>(collection, new Meta(collection));
     }
 
     public static <T> Response<T> notFound(String message) {

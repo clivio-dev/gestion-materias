@@ -54,7 +54,9 @@ public class CurriculumController {
                         .map(s -> new SubjectDTO(
                                 s.getId(),
                                 s.getName(),
-                                s.getPrerequisiteSubjects() // Ya cargado eficientemente
+                                s.getSemester(),
+                                s.getAnual(),
+                                s.getPrerequisiteSubjects()
                         ))
                         .collect(Collectors.toSet())
         );

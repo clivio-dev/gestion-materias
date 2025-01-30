@@ -71,4 +71,8 @@ public class Subject {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public boolean getAnual() {
+        return anual;
+    }
 }

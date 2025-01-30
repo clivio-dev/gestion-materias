@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 public class SubjectDTO {
     private long id;
     private String name;
+    private int semester;
+    private boolean anual;
     private Set<Long> prerequisites;
 
     @Override
@@ -35,6 +37,8 @@ public class SubjectDTO {
         return new SubjectDTO(
             subjectBasicProjection.getId(),
             subjectBasicProjection.getName(),
+            subjectBasicProjection.getSemester(),
+            subjectBasicProjection.getAnual(),
             subjectBasicProjection.getPrerequisiteSubjects()
         );
     }
