@@ -1,8 +1,12 @@
 package Javastral.com.gestorMateriasWeb.security;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +22,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import Javastral.com.gestorMateriasWeb.security.jwt.AuthEntryPointJwt;
 import Javastral.com.gestorMateriasWeb.security.jwt.AuthTokenFilter;
@@ -33,6 +40,9 @@ public class SecurityConfig {
 
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
+
+	@Value("${app.cors.allowed-origins:http://localhost:5173}")
+	private String corsAllowedOrigins;
 
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -67,14 +77,16 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/**").permitAll()
-//						.requestMatchers("/swagger-ui/**").permitAll()
-//						.requestMatchers("/api/subjects/**").permitAll()
-//						.requestMatchers("/api/curriculums/**").permitAll()
-//						.requestMatchers("/api/departments/**").permitAll()
+						.requestMatchers(
+								"/api/auth/**",
+								"/swagger-ui/**",
+								"/api-docs/**",
+								"/health"
+						).permitAll()
 						.anyRequest().authenticated()
 						);
 
@@ -84,5 +96,29 @@ public class SecurityConfig {
 //		http.addFilterBefore(this.authenticationJwtTokenFilter(), FilterSecurityInterceptor.class);
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		List<String> allowedOrigins = Arrays.stream(this.corsAllowedOrigins.split(","))
+				.map(String::trim)
+				.filter(origin -> !origin.isEmpty())
+				.toList();
+
+		if (allowedOrigins.isEmpty()) {
+			configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+		} else {
+			configuration.setAllowedOrigins(allowedOrigins);
+		}
+
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
+		configuration.setMaxAge(3600L);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 }

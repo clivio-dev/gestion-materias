@@ -1,6 +1,5 @@
 package Javastral.com.gestorMateriasWeb.security.service;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +27,8 @@ import Javastral.com.gestorMateriasWeb.security.payload.JwtResponse;
 import Javastral.com.gestorMateriasWeb.security.payload.LoginRequest;
 import Javastral.com.gestorMateriasWeb.security.payload.MessageResponse;
 import Javastral.com.gestorMateriasWeb.security.payload.SignupRequest;
+import Javastral.com.gestorMateriasWeb.security.service.RefreshTokenService.RefreshTokenDescriptor;
+import Javastral.com.gestorMateriasWeb.security.service.RefreshTokenService.RefreshTokenRotation;
 
 @Service
 public class AuthService {
@@ -46,8 +46,17 @@ public class AuthService {
 
 	@Autowired
 	JwtUtils jwtUtils;
+
+	@Autowired
+	RefreshTokenService refreshTokenService;
 	
-	public JwtResponse login(LoginRequest loginRequest) throws AuthenticationException {
+	public void logout(String username) {
+		this.userRepository.findByUsername(username).ifPresent(user -> {
+			this.refreshTokenService.revokeAllForUser(user);
+		});
+	}
+
+	public LoginResult login(LoginRequest loginRequest) throws AuthenticationException {
 		Authentication authentication = this.authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
 							loginRequest.getUsername(),
@@ -55,25 +64,55 @@ public class AuthService {
 				);
 		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		
+
 		String jwt = this.jwtUtils.generateJwtToken(authentication);
-		
+
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		
+
 		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
-		
-		String refreshToken = "TODO: implementar";
+
+		UserEntity userEntity = this.userRepository.findById(userDetails.getId())
+				.orElseThrow(() -> new IllegalStateException("Authenticated user not found."));
+
+		RefreshTokenDescriptor refreshDescriptor = this.refreshTokenService.create(userEntity, true);
+
 		long expiration = this.jwtUtils.getExpirationTime();
 
-		return new JwtResponse(
-			jwt,
-			expiration,
-			refreshToken,
-			userDetails.getUsername(),
-			userDetails.getEmail(),
-			roles
+		JwtResponse jwtResponse = new JwtResponse(
+				jwt,
+				expiration,
+				null,
+				userDetails.getUsername(),
+				userDetails.getEmail(),
+				roles
 		);
+
+		return new LoginResult(jwtResponse, refreshDescriptor);
+	}
+
+	public LoginResult refreshAccessToken(String refreshTokenValue) {
+		RefreshTokenRotation rotation = this.refreshTokenService.rotate(refreshTokenValue);
+		UserEntity user = rotation.user();
+		UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+				userDetails,
+				null,
+				userDetails.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = this.jwtUtils.generateJwtToken(authentication);
+		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
+		long expiration = this.jwtUtils.getExpirationTime();
+		JwtResponse jwtResponse = new JwtResponse(
+				jwt,
+				expiration,
+				null,
+				userDetails.getUsername(),
+				userDetails.getEmail(),
+				roles
+		);
+		return new LoginResult(jwtResponse, rotation.descriptor());
 	}
 	
 	public ResponseEntity<?> signUp(SignupRequest signupRequest) {
@@ -125,4 +164,6 @@ public class AuthService {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+
+	public record LoginResult(JwtResponse jwtResponse, RefreshTokenDescriptor refreshToken) { }
 }
