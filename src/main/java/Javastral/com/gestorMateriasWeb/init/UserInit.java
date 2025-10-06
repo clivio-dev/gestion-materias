@@ -50,8 +50,8 @@ public class UserInit implements CommandLineRunner{
                         .build()))
                 .build();
 
-        userRepository.save(userEntity);
-        userRepository.save(userEntity2);
-        userRepository.save(userEntity3);
+//        userRepository.save(userEntity);
+//        userRepository.save(userEntity2);
+//        userRepository.save(userEntity3);
 	}
 }
