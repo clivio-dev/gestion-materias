@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +24,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -75,6 +78,19 @@ public class SecurityConfig {
 	}
 
 	@Bean
+	@Order(1)
+	public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
+		http.securityMatcher("/swagger-ui.html", "/swagger-ui/**", "/swagger/**", "/v3/api-docs/**", "/api-docs/**")
+				.csrf(AbstractHttpConfigurer::disable)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+				.httpBasic(Customizer.withDefaults())
+				.exceptionHandling(exception -> exception.authenticationEntryPoint(swaggerBasicEntryPoint()));
+
+		return http.build();
+	}
+
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.csrf(AbstractHttpConfigurer::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -83,8 +99,6 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(
 								"/api/auth/**",
-								"/swagger-ui/**",
-								"/api-docs/**",
 								"/health"
 						).permitAll()
 						.anyRequest().authenticated()
@@ -120,5 +134,13 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
+	}
+
+	@Bean
+	public BasicAuthenticationEntryPoint swaggerBasicEntryPoint() {
+		BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+		entryPoint.setRealmName("swagger-ui");
+		entryPoint.afterPropertiesSet();
+		return entryPoint;
 	}
 }
