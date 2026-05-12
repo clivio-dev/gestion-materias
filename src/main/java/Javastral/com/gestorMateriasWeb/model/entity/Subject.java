@@ -1,0 +1,78 @@
+package Javastral.com.gestorMateriasWeb.model.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "subjects")
+public class Subject {
+
+    @Id
+    private long id;
+
+    @NotBlank
+    @Size(max = 255)
+    private String name;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "subject_prerequisites",
+            joinColumns = @JoinColumn(name = "subject_id")
+    )
+    @Column(name = "prerequisite_id")
+    // Alexis Note: esto hace que al cargar la colleccion que es lazy se cargue de a 100 evitando una consulta por cada una, nose por que podiendo esta coleccion en EAGER no es suficiente y aun tengo que hacer esto
+    @BatchSize(size = 100)
+    private Set<Long> prerequisiteSubjects;
+
+    @ManyToMany(mappedBy = "subjects", fetch = FetchType.LAZY)
+    private Set<Curriculum> curriculums;
+
+    @Column(columnDefinition = "TEXT")
+    @Basic(fetch = FetchType.LAZY)
+    private String description = "";
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Attachment> attachments = new HashSet<>();
+
+    @NotNull
+    @Column(columnDefinition = "int default 0")
+    private int semester = 0;
+
+    @NotNull
+    @Column(columnDefinition = "boolean default false")
+    private boolean anual = false;
+
+    public Subject(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Subject subject)) return false;
+        return id == subject.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public boolean getAnual() {
+        return anual;
+    }
+}

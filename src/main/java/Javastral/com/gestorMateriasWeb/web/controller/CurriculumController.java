@@ -1,0 +1,122 @@
+package Javastral.com.gestorMateriasWeb.web.controller;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumIdNameProjection;
+import Javastral.com.gestorMateriasWeb.model.proyection.CurriculumWithSubjectsProjection;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Response;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Error;
+import Javastral.com.gestorMateriasWeb.web.controller.response.Meta;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import Javastral.com.gestorMateriasWeb.model.entity.Curriculum;
+import Javastral.com.gestorMateriasWeb.model.entity.Subject;
+import Javastral.com.gestorMateriasWeb.model.repository.CurriculumRepository;
+import Javastral.com.gestorMateriasWeb.model.repository.SubjectRepository;
+import Javastral.com.gestorMateriasWeb.web.controller.request.CurriculumDTO;
+import Javastral.com.gestorMateriasWeb.web.controller.request.SubjectDTO;
+
+
+@RestController
+@RequestMapping("/curriculum")
+@CrossOrigin(origins = "*", maxAge = 3600) // TODO: para dev, aplicar configuracion de cors por db o env
+public class CurriculumController {
+    private final CurriculumRepository curriculumRepository;
+    private final SubjectRepository subjectRepository;
+
+    @Autowired
+    public CurriculumController(CurriculumRepository curriculumRepository, SubjectRepository subjectRepository) {
+        this.curriculumRepository = curriculumRepository;
+        this.subjectRepository = subjectRepository;
+    }
+
+    @GetMapping("/{curriculumId}")
+    ResponseEntity<Response<CurriculumDTO>> getCurriculumById(@PathVariable String curriculumId) {
+        var opt = curriculumRepository.findCurriculumWithSubjectsById(Long.parseLong(curriculumId));
+        if (opt.isEmpty()) {
+            var msg = "Curriculum with id " + curriculumId + " not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.notFound(msg));
+        }
+
+        var curriculum = opt.get();
+        var dto = new CurriculumDTO(
+                curriculum.getId(),
+                curriculum.getName(),
+                curriculum.getSubjects().stream()
+                        .map(s -> new SubjectDTO(
+                                s.getId(),
+                                s.getName(),
+                                s.getSemester(),
+                                s.getAnual(),
+                                s.getPrerequisiteSubjects()
+                        ))
+                        .collect(Collectors.toSet())
+        );
+        return ResponseEntity.ok(new Response<>(dto));
+    }
+
+    @GetMapping("/all")
+    ResponseEntity<List<CurriculumIdNameProjection>> getAllCurriculums(){
+        return ResponseEntity.ok(curriculumRepository.getCurriculumProy());
+    }
+
+    // TODO: esto huele a bacalao
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
+    ResponseEntity<String> saveCurriculum(@RequestBody CurriculumDTO curriculumDTO) {
+
+        if(curriculumRepository.existsById(curriculumDTO.getId()))
+            return ResponseEntity
+                    .badRequest()
+                    .body("The curriculum with ID: " + curriculumDTO.getId() + " already exists.");
+
+        Map<Long, Subject> subjects = curriculumDTO.getSubjects().stream().collect(
+                Collectors.toMap(
+                        SubjectDTO::getId,
+                        subjectDTO -> new Subject(subjectDTO.getId(), subjectDTO.getName())));
+
+        for (SubjectDTO subjectDTO : curriculumDTO.getSubjects()) {
+
+            Set<Long> prerequisites = new HashSet<>();
+
+            for (Long idPrerequisiteDTO : subjectDTO.getPrerequisites()) {
+
+                if (idPrerequisiteDTO != subjectDTO.getId() && subjects.containsKey(idPrerequisiteDTO)) {
+                    prerequisites.add(idPrerequisiteDTO);
+                } else {
+                    return ResponseEntity
+                            .badRequest()
+                            .body("Invalid Prerequisite with ID: " + idPrerequisiteDTO);
+                }
+            }
+            subjects.get(subjectDTO.getId()).setPrerequisiteSubjects(prerequisites);
+        }
+
+        Curriculum newCurriculum = new Curriculum(
+                curriculumDTO.getId(),
+                curriculumDTO.getName(),
+                new HashSet<>(subjects.values()), 
+                "");
+
+        for(Subject s : subjects.values()){
+            if(!subjectRepository.existsById(s.getId()))
+                subjectRepository.save(s);
+        }
+        curriculumRepository.save(newCurriculum);
+
+        return ResponseEntity.ok("The new curriculum was saved successfully.");
+    }
+
+}
+
+
+
+
