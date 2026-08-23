@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -41,7 +42,7 @@ public class SecurityConfig {
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
 
-	@Value("${app.cors.allowed-origins:http://localhost:5173}")
+	@Value("${app.cors.allowed-origins:http://localhost:3011}")
 	private String corsAllowedOrigins;
 
 	@Bean
@@ -86,6 +87,12 @@ public class SecurityConfig {
 								"/swagger-ui/**",
 								"/api-docs/**",
 								"/health"
+						).permitAll()
+						.requestMatchers(HttpMethod.GET,
+								"/departments/**",
+								"/curriculum/**",
+								"/subjects/**",
+								"/professors/**"
 						).permitAll()
 						.anyRequest().authenticated()
 						);

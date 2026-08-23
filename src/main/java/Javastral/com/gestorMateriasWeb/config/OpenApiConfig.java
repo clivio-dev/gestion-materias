@@ -20,8 +20,9 @@ public class OpenApiConfig {
         final String securitySchemeName = "basicAuth";
 
         Server devServer = new Server();
-        devServer.setUrl("http://localhost:8090");
-        devServer.setDescription("Server URL in Development environment");
+        // Use same origin as Swagger UI host to avoid cross-origin/network issues.
+        devServer.setUrl("/");
+        devServer.setDescription("Server URL in current environment");
 
         Contact contact = new Contact();
         contact.setEmail("tu@email.com");
